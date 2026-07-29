@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Spatial UI · Glassmorphism</title>
+    <!-- Font & Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at 20% 30%, #0b1120, #03050b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        /* main spatial card */
+        .spatial-container {
+            max-width: 1300px;
+            width: 100%;
+            background: rgba(18, 28, 46, 0.35);
+            backdrop-filter: blur(18px) saturate(180%);
+            -webkit-backdrop-filter: blur(18px) saturate(180%);
+            border-radius: 3.5rem;
+            padding: 2.5rem 2.8rem;
+            box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.8),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.2s ease;
+        }
+
+        /* header / top bar */
+        .spatial-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3.2rem;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(145deg, #6c8cff, #3b5ddb);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            box-shadow: 0 12px 28px -6px rgba(56, 97, 255, 0.4);
+        }
+
+        .logo-text {
+            font-size: 1.9rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            background: linear-gradient(to right, #f0f5ff, #b7cbff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.8rem;
+        }
+
+        .header-actions i {
+            color: rgba(220, 235, 255, 0.7);
+            font-size: 1.4rem;
+            transition: 0.2s;
+            cursor: default;
+        }
+
+        .header-actions i:hover {
+            color: #b7cbff;
+            transform: translateY(-2px);
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 30px;
+            background: linear-gradient(135deg, #6086ff, #2e4eb0);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: white;
+            box-shadow: 0 8px 20px rgba(0, 20, 80, 0.5);
+        }
+
+        /* 3D spatial grid / cards area */
+        .spatial-grid {
+            display: grid;
+            grid-template-columns: 1.3fr 1.9fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2.8rem;
+        }
+
+        /* card base — spatial glass */
+        .spatial-card {
+            background: rgba(22, 34, 58, 0.3);
+            backdrop-filter: blur(6px) saturate(160%);
+            -webkit-backdrop-filter: blur(6px) saturate(160%);
+            border-radius: 2.5rem;
+            padding: 1.8rem 1.6rem 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .spatial-card:hover {
+            transform: translateY(-6px);
+            background: rgba(28, 42, 70, 0.45);
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 28px 48px -14px #0b1428;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.4rem;
+        }
+
+        .card-header h3 {
+            font-weight: 500;
+            font-size: 1rem;
+            letter-spacing: 0.3px;
+            color: rgba(200, 215, 255, 0.7);
+            text-transform: uppercase;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 0.25rem 0.9rem;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .card-header i {
+            color: rgba(200, 215, 255, 0.3);
+            font-size: 1.2rem;
+        }
+
+        /* card content - spatial elements */
+        .metric-value {
+            font-size: 2.7rem;
+            font-weight: 600;
+            letter-spacing: -1px;
+            color: #f0f7ff;
+            line-height: 1.2;
+            margin-bottom: 0.2rem;
+            display: flex;
+            align-items: baseline;
+            gap: 0.3rem;
+        }
+
+        .metric-label {
+            color: rgba(180, 200, 240, 0.6);
+            font-size: 0.85rem;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        .spatial-progress {
+            margin-top: 1.4rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .progress-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .progress-item span {
+            font-size: 0.8rem;
+            color: rgba(200, 218, 255, 0.7);
+            min-width: 60px;
+        }
+
+        .progress-bar-bg {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 20px;
+            background: linear-gradient(90deg, #5d82ff, #8aa3ff);
+            width: 0%;
+            box-shadow: 0 0 12px #3b64ff66;
+        }
+
+        .progress-fill.purple {
+            background: linear-gradient(90deg, #8f6cff, #b48cff);
+        }
+
+        .progress-fill.green {
+            background: linear-gradient(90deg, #2ecb8a, #6ae2b0);
+        }
+
+        /* second card (middle) */
+        .spatial-card.middle {
+            grid-column: span 1;
+        }
+
+        .wave-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 0.2rem;
+        }
+
+        .wave-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 5px;
+            height: 70px;
+        }
+
+        .wave-bars div {
+            width: 8px;
+            background: linear-gradient(180deg, #6c8cff, #3f62d4);
+            border-radius: 10px 10px 4px 4px;
+            height: calc(20% + 10% * var(--i, 1));
+            box-shadow: 0 0 12px #3b64ff33;
+            transition: 0.2s;
+        }
+
+        .wave-bars div:nth-child(1) {
+            --i: 1;
+            height: 38px;
+        }
+
+        .wave-bars div:nth-child(2) {
+            --i: 2;
+            height: 60px;
+        }
+
+        .wave-bars div:nth-child(3) {
+            --i: 3;
+            height: 48px;
+        }
+
+        .wave-bars div:nth-child(4) {
+            --i: 4;
+            height: 72px;
+        }
+
+        .wave-bars div:nth-child(5) {
+            --i: 5;
+            height: 32px;
+        }
+
+        .wave-bars div:nth-child(6) {
+            --i: 6;
+            height: 56px;
+        }
+
+        .wave-bars div:nth-child(7) {
+            --i: 7;
+            height: 44px;
+        }
+
+        .spatial-tag {
+            background: rgba(100, 140, 255, 0.12);
+            backdrop-filter: blur(2px);
+            padding: 0.4rem 1.2rem;
+            border-radius: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            color: #b7cbff;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .spatial-tag i {
+            font-size: 0.7rem;
+            color: #6c8cff;
+        }
+
+        /* right card (third) */
+        .spatial-card.right .metric-value {
+            font-size: 2.4rem;
+        }
+
+        .device-list {
+            margin-top: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.9rem;
+        }
+
+        .device-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        .device-row span:first-child {
+            color: rgba(200, 218, 255, 0.8);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .device-row span:first-child i {
+            color: #6c8cff;
+            width: 20px;
+            text-align: center;
+        }
+
+        .device-row .status {
+            font-size: 0.7rem;
+            background: rgba(60, 200, 120, 0.15);
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            color: #6ae2b0;
+            border: 1px solid rgba(60, 200, 120, 0.08);
+        }
+
+        .status.off {
+            background: rgba(255, 100, 100, 0.08);
+            color: #ff9090;
+            border-color: rgba(255, 100, 100, 0.05);
+        }
+
+        /* bottom bar - spatial navigation */
+        .spatial-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.8rem;
+            padding-top: 1.4rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-nav {
+            display: flex;
+            gap: 1.8rem;
+        }
+
+        .footer-nav a {
+            color: rgba(200, 215, 255, 0.3);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 450;
+            letter-spacing: 0.3px;
+            transition: 0.2s;
+            border-bottom: 1px solid transparent;
+            padding-bottom: 0.2rem;
+        }
+
+        .footer-nav a:hover {
+            color: #b7cbff;
+            border-bottom-color: #6c8cff;
+        }
+
+        .footer-cta {
+            display: flex;
+            gap: 1.2rem;
+        }
+
+        .btn-spatial {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 0.6rem 1.8rem;
+            border-radius: 60px;
+            color: rgba(220, 235, 255, 0.7);
+            font-weight: 450;
+            font-size: 0.9rem;
+            backdrop-filter: blur(4px);
+            cursor: default;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-spatial i {
+            font-size: 0.8rem;
+        }
+
+        .btn-spatial:hover {
+            background: rgba(70, 110, 255, 0.08);
+            border-color: rgba(100, 140, 255, 0.2);
+            color: #f0f7ff;
+            transform: scale(1.02);
+        }
+
+        .btn-spatial.primary {
+            background: linear-gradient(145deg, #3f66e0, #2648b0);
+            border: none;
+            color: white;
+            box-shadow: 0 10px 20px -8px #1b3690;
+        }
+
+        .btn-spatial.primary:hover {
+            background: linear-gradient(145deg, #5275f0, #2f53c0);
+            box-shadow: 0 14px 28px -10px #1f3d8a;
+        }
+
+        /* responsive */
+        @media (max-width: 950px) {
+            .spatial-grid {
+                grid-template-columns: 1fr;
+                gap: 1.8rem;
+            }
+
+            .spatial-container {
+                padding: 2rem 1.5rem;
+                border-radius: 2.5rem;
+            }
+        }
+
+        @media (max-width: 550px) {
+            .spatial-header {
+                flex-direction: column;
+                align-items: start;
+            }
+
+            .logo-text {
+                font-size: 1.4rem;
+            }
+
+            .footer-nav {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .metric-value {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="spatial-container">
+
+        <!-- header -->
+        <header class="spatial-header">
+            <div class="logo-area">
+                <div class="logo-icon"><i class="fas fa-cube"></i></div>
+                <span class="logo-text">Spatial</span>
+            </div>
+            <div class="header-actions">
+                <i class="fas fa-search"></i>
+                <i class="fas fa-sliders-h"></i>
+                <i class="fas fa-bell"></i>
+                <div class="avatar">JD</div>
+            </div>
+        </header>
+
+        <!-- 3-column spatial grid -->
+        <div class="spatial-grid">
+
+            <!-- card 1: metrics + progress -->
+            <div class="spatial-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-line" style="margin-right: 8px;"></i> performance</h3>
+                    <i class="fas fa-ellipsis-h"></i>
+                </div>
+                <div class="metric-value">
+                    87<span style="font-size: 1.2rem; font-weight: 300; color: rgba(180,200,240,0.5);">%</span>
+                </div>
+                <div class="metric-label">spatial efficiency · +12%</div>
+
+                <div class="spatial-progress">
+                    <div class="progress-item">
+                        <span>Compute</span>
+                        <div class="progress-bar-bg">
+                            <div class="progress-fill" style="width: 82%;"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <span>Memory</span>
+                        <div class="progress-bar-bg">
+                            <div class="progress-fill purple" style="width: 64%;"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <span>Bandwidth</span>
+                        <div class="progress-bar-bg">
+                            <div class="progress-fill green" style="width: 91%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 1.2rem; display: flex; gap: 0.6rem; flex-wrap: wrap;">
+                    <span class="spatial-tag"><i class="fas fa-circle" style="color: #5d82ff;"></i> 4K streaming</span>
+                    <span class="spatial-tag"><i class="fas fa-circle" style="color: #8f6cff;"></i> low latency</span>
+                </div>
+            </div>
+
+            <!-- card 2: spatial audio / wave -->
+            <div class="spatial-card middle">
+                <div class="card-header">
+                    <h3><i class="fas fa-wave-square" style="margin-right: 8px;"></i> audio field</h3>
+                    <i class="fas fa-ellipsis-h"></i>
+                </div>
+                <div class="metric-value" style="font-size: 2.2rem;">
+                    <span style="font-weight: 300;">spatial</span> 3D
+                </div>
+                <div class="metric-label">immersive · 7.1.4 channels</div>
+
+                <div class="wave-group">
+                    <div class="wave-bars">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                    <span class="spatial-tag"><i class="fas fa-headphones"></i> live</span>
+                </div>
+                <div
+                    style="display: flex; justify-content: space-between; margin-top: 0.6rem; color: rgba(200,215,255,0.3); font-size: 0.7rem; letter-spacing: 0.3px;">
+                    <span>LFE</span><span>mid</span><span>high</span>
+                </div>
+            </div>
+
+            <!-- card 3: devices -->
+            <div class="spatial-card right">
+                <div class="card-header">
+                    <h3><i class="fas fa-network-wired" style="margin-right: 8px;"></i> devices</h3>
+                    <i class="fas fa-ellipsis-h"></i>
+                </div>
+                <div class="metric-value">
+                    6 <span style="font-size: 1rem; font-weight: 300; color: rgba(180,200,240,0.4);">active</span>
+                </div>
+                <div class="metric-label">spatial mesh · 2.4 Gbps</div>
+
+                <div class="device-list">
+                    <div class="device-row">
+                        <span><i class="fas fa-laptop"></i> Studio Pro</span>
+                        <span class="status"><i class="fas fa-circle" style="font-size: 0.4rem; margin-right: 6px;"></i>
+                            online</span>
+                    </div>
+                    <div class="device-row">
+                        <span><i class="fas fa-tablet-alt"></i> Canvas tab</span>
+                        <span class="status"><i class="fas fa-circle" style="font-size: 0.4rem; margin-right: 6px;"></i>
+                            online</span>
+                    </div>
+                    <div class="device-row">
+                        <span><i class="fas fa-server"></i> Core node</span>
+                        <span class="status off"><i class="fas fa-circle"
+                                style="font-size: 0.4rem; margin-right: 6px;"></i> standby</span>
+                    </div>
+                    <div class="device-row">
+                        <span><i class="fas fa-vr-cardboard"></i> Vision headset</span>
+                        <span class="status"><i class="fas fa-circle" style="font-size: 0.4rem; margin-right: 6px;"></i>
+                            online</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- footer -->
+        <footer class="spatial-footer">
+            <div class="footer-nav">
+                <a href="#"><i class="fas fa-th-large" style="margin-right: 6px;"></i>Dashboard</a>
+                <a href="#"><i class="fas fa-cube" style="margin-right: 6px;"></i>Spaces</a>
+                <a href="#"><i class="fas fa-sliders-h" style="margin-right: 6px;"></i>Controls</a>
+                <a href="#"><i class="fas fa-chart-pie" style="margin-right: 6px;"></i>Analytics</a>
+            </div>
+            <div class="footer-cta">
+                <span class="btn-spatial"><i class="fas fa-rotate-right"></i> sync</span>
+                <span class="btn-spatial primary"><i class="fas fa-arrow-right"></i> launch</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- tiny JS: interactive progress & wave (cosmetic) -->
+    <script>
+        (function () {
+            // subtle animation: progress bars fill on load
+            const fills = document.querySelectorAll('.progress-fill');
+            fills.forEach((fill, index) => {
+                const width = fill.style.width; // store original
+                fill.style.width = '0%';
+                setTimeout(() => {
+                    fill.style.transition = 'width 0.8s cubic-bezier(0.2, 0.9, 0.4, 1)';
+                    fill.style.width = width;
+                }, 200 + index * 120);
+            });
+
+            // wave bar "breathing" effect (spatial vibe)
+            const bars = document.querySelectorAll('.wave-bars div');
+            function randomHeight() {
+                bars.forEach((bar, i) => {
+                    const base = [38, 60, 48, 72, 32, 56, 44][i] || 40;
+                    const variation = Math.floor(Math.random() * 18) - 6;
+                    const newH = Math.min(78, Math.max(20, base + variation));
+                    bar.style.height = newH + 'px';
+                });
+            }
+            // initial random
+            randomHeight();
+            setInterval(randomHeight, 2200);
+
+            // extra: hover on cards adds subtle 'spatial' glow (already via css)
+            // also, device status toggle (just for demo)
+            const statuses = document.querySelectorAll('.device-row .status');
+            statuses.forEach((el, idx) => {
+                el.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    if (this.classList.contains('off')) {
+                        this.classList.remove('off');
+                        this.innerHTML = '<i class="fas fa-circle" style="font-size: 0.4rem; margin-right: 6px;"></i> online';
+                    } else {
+                        this.classList.add('off');
+                        this.innerHTML = '<i class="fas fa-circle" style="font-size: 0.4rem; margin-right: 6px;"></i> standby';
+                    }
+                });
+            });
+
+            // avatar greeting (cosmetic)
+            const avatar = document.querySelector('.avatar');
+            if (avatar) {
+                avatar.addEventListener('mouseenter', () => {
+                    avatar.style.background = 'linear-gradient(135deg, #7a9aff, #3f62d4)';
+                    avatar.style.transform = 'scale(1.02)';
+                });
+                avatar.addEventListener('mouseleave', () => {
+                    avatar.style.background = 'linear-gradient(135deg, #6086ff, #2e4eb0)';
+                    avatar.style.transform = 'scale(1)';
+                });
+            }
+        })();
+    </script>
+
+</body>
+
+</html>

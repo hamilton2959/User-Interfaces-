@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRUTALISM · raw UI</title>
+    <!-- no external fonts, no frameworks — pure brutalist grit -->
+    <style>
+        /* ---------- GLOBAL RESET / BASE ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f4f0eb;
+            /* off-white concrete base */
+            color: #1a1a1a;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            padding: 2rem 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* main brutalist container – heavy, angular, no roundness */
+        .brutalist {
+            max-width: 1280px;
+            width: 100%;
+            background: #e8e3dc;
+            border: 6px solid #0f0f0f;
+            box-shadow: 16px 16px 0 #0f0f0f;
+            padding: 2rem 2rem 2.5rem;
+            transition: box-shadow 0.15s ease;
+        }
+
+        /* all headings – uppercase, heavy, stark */
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            text-transform: uppercase;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        h1 {
+            font-size: 3.8rem;
+            line-height: 1;
+            border-bottom: 6px solid #0f0f0f;
+            padding-bottom: 0.3rem;
+            margin-bottom: 1.8rem;
+            word-break: break-word;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            border-left: 10px solid #0f0f0f;
+            padding-left: 0.9rem;
+            margin: 2.2rem 0 1.2rem 0;
+        }
+
+        h3 {
+            font-size: 1.6rem;
+            background: #0f0f0f;
+            color: #f4f0eb;
+            display: inline-block;
+            padding: 0.2rem 1rem;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+
+        /* ---------- TYPOGRAPHY & ELEMENTS ---------- */
+        p {
+            margin-bottom: 1.2rem;
+            max-width: 70ch;
+        }
+
+        a {
+            color: #0f0f0f;
+            font-weight: 700;
+            text-decoration: underline;
+            text-underline-offset: 5px;
+            text-decoration-thickness: 4px;
+        }
+
+        a:hover {
+            background: #0f0f0f;
+            color: #f4f0eb;
+            text-decoration: none;
+            padding: 0.1rem 0.3rem;
+        }
+
+        /* brutalist list – no bullets, just heavy border */
+        ul {
+            list-style: none;
+            margin: 1.5rem 0;
+            padding: 0;
+        }
+
+        li {
+            border-bottom: 4px solid #1a1a1a;
+            padding: 0.8rem 0.4rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        li:last-child {
+            border-bottom: none;
+        }
+
+        /* ---------- BUTTONS – heavy, blocky, no gradients ---------- */
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            margin: 2rem 0 1.5rem;
+        }
+
+        .btn {
+            background: #f4f0eb;
+            border: 4px solid #0f0f0f;
+            box-shadow: 8px 8px 0 #0f0f0f;
+            padding: 0.9rem 2.2rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: 700;
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #0f0f0f;
+            cursor: pointer;
+            transition: all 0.08s linear;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            line-height: 1;
+        }
+
+        .btn:active {
+            transform: translate(6px, 6px);
+            box-shadow: 2px 2px 0 #0f0f0f;
+        }
+
+        .btn--primary {
+            background: #0f0f0f;
+            color: #f4f0eb;
+            box-shadow: 8px 8px 0 #3d3d3d;
+        }
+
+        .btn--primary:active {
+            box-shadow: 2px 2px 0 #3d3d3d;
+        }
+
+        .btn--danger {
+            background: #b13e3e;
+            color: #f4f0eb;
+            border-color: #0f0f0f;
+            box-shadow: 8px 8px 0 #0f0f0f;
+        }
+
+        /* ---------- CARDS / GRID ---------- */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2rem;
+            margin: 2.5rem 0;
+        }
+
+        .card {
+            background: #d9d2c5;
+            border: 6px solid #0f0f0f;
+            padding: 1.5rem 1.2rem 1.8rem;
+            box-shadow: 12px 12px 0 #0f0f0f;
+            transition: 0.06s linear;
+        }
+
+        .card:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 16px 16px 0 #0f0f0f;
+        }
+
+        .card h4 {
+            font-size: 1.8rem;
+            margin-bottom: 0.6rem;
+            border-bottom: 4px solid #0f0f0f;
+            padding-bottom: 0.3rem;
+        }
+
+        /* ---------- FORM – raw, unpolished ---------- */
+        .brutal-form {
+            background: #d2cbbc;
+            border: 6px solid #0f0f0f;
+            padding: 2rem 1.8rem;
+            margin: 2rem 0;
+            box-shadow: 12px 12px 0 #0f0f0f;
+        }
+
+        .form-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.8rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            font-weight: 700;
+            text-transform: uppercase;
+            min-width: 100px;
+            letter-spacing: 0.04em;
+        }
+
+        .form-group input {
+            flex: 1;
+            min-width: 200px;
+            background: #f4f0eb;
+            border: 4px solid #0f0f0f;
+            padding: 0.7rem 0.8rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #0f0f0f;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            background: #fffcf5;
+            border-color: #b13e3e;
+        }
+
+        /* ---------- STATUS / FEEDBACK ---------- */
+        #statusMessage {
+            background: #0f0f0f;
+            color: #f4f0eb;
+            padding: 0.8rem 1.4rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-left: 14px solid #b13e3e;
+            margin: 1.8rem 0 0.5rem;
+            display: inline-block;
+            letter-spacing: 0.04em;
+            border: 4px solid #0f0f0f;
+            border-left-width: 14px;
+            box-shadow: 6px 6px 0 #0f0f0f;
+        }
+
+        .counter-badge {
+            background: #0f0f0f;
+            color: #f4f0eb;
+            padding: 0.2rem 1rem;
+            font-size: 1.6rem;
+            font-weight: 700;
+            border: 4px solid #0f0f0f;
+            box-shadow: 6px 6px 0 #0f0f0f;
+            margin-left: 0.5rem;
+        }
+
+        hr {
+            border: none;
+            border-top: 8px solid #0f0f0f;
+            margin: 2.5rem 0 1rem;
+        }
+
+        /* ---------- UTILITY ---------- */
+        .flex-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1rem 2rem;
+        }
+
+        .mt-2 {
+            margin-top: 2rem;
+        }
+
+        .mb-1 {
+            margin-bottom: 1rem;
+        }
+
+        .text-small {
+            font-size: 0.9rem;
+            letter-spacing: 0.02em;
+        }
+
+        /* ---------- RESPONSIVE TWEAKS ---------- */
+        @media (max-width: 700px) {
+            body {
+                padding: 1rem 0.8rem;
+            }
+
+            .brutalist {
+                padding: 1.2rem;
+                box-shadow: 10px 10px 0 #0f0f0f;
+            }
+
+            h1 {
+                font-size: 2.8rem;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+            }
+
+            .btn {
+                padding: 0.7rem 1.4rem;
+                font-size: 1.1rem;
+            }
+
+            .grid-2 {
+                gap: 1.2rem;
+            }
+
+            .form-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .form-group label {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="brutalist">
+        <!-- header -->
+        <header>
+            <h1>⛧ BRUTALISM</h1>
+            <div class="flex-row"
+                style="justify-content: space-between; border-bottom: 6px solid #0f0f0f; padding-bottom: 0.6rem; margin-bottom: 1.2rem;">
+                <span style="font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;">Raw · heavy ·
+                    unapologetic</span>
+                <span style="background: #0f0f0f; color: #f4f0eb; padding: 0.1rem 1rem; font-weight: 700;">v.1.0</span>
+            </div>
+        </header>
+
+        <!-- hero / dynamic counter -->
+        <section>
+            <div class="flex-row" style="justify-content: space-between; flex-wrap: wrap;">
+                <div>
+                    <h2 style="border-left: 10px solid #b13e3e; margin-top: 0;">concrete <br>interface</h2>
+                    <p style="font-weight: 500; max-width: 50ch;">
+                        No shadows, no rounded corners. Only raw blocks, heavy borders,
+                        and brutal typography. This is a <strong>Brutalist UI</strong> built with pure HTML, CSS &amp;
+                        JavaScript.
+                    </p>
+                </div>
+                <div
+                    style="background: #d9d2c5; border: 6px solid #0f0f0f; padding: 1rem 2rem; box-shadow: 10px 10px 0 #0f0f0f; text-align: center;">
+                    <span
+                        style="display: block; font-weight: 700; text-transform: uppercase; font-size: 0.9rem;">clicks</span>
+                    <span id="clickCounter" class="counter-badge"
+                        style="font-size: 3rem; padding: 0.2rem 1.8rem; box-shadow: 6px 6px 0 #0f0f0f;">0</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- buttons + interaction -->
+        <div class="btn-group">
+            <button class="btn" id="btnClick">⬡ press</button>
+            <button class="btn btn--primary" id="btnReset">⟲ reset</button>
+            <button class="btn btn--danger" id="btnToggle">⬛ toggle</button>
+        </div>
+
+        <!-- status message (dynamic) -->
+        <div id="statusMessage">⚡ system ready</div>
+
+        <!-- grid cards -->
+        <div class="grid-2">
+            <div class="card">
+                <h4>⬡ module</h4>
+                <p style="font-weight: 500;">Heavy card with double border. Hover shifts the shadow.</p>
+                <span
+                    style="display: inline-block; background: #0f0f0f; color: #f4f0eb; padding: 0.2rem 0.8rem; font-weight: 700;">#brutal</span>
+            </div>
+            <div class="card">
+                <h4>⛐ raw</h4>
+                <p style="font-weight: 500;">No gradients, no smoothness. Just pure structure and contrast.</p>
+                <span
+                    style="display: inline-block; background: #b13e3e; color: #f4f0eb; padding: 0.2rem 0.8rem; font-weight: 700;">!important</span>
+            </div>
+        </div>
+
+        <!-- list (dynamic items) -->
+        <h2>⧗ task log</h2>
+        <ul id="taskList">
+            <li><span>⚡ initiate brutalism</span> <span
+                    style="background: #0f0f0f; color: #f4f0eb; padding: 0.1rem 0.8rem;">done</span></li>
+            <li><span>⬡ build heavy UI</span> <span
+                    style="background: #0f0f0f; color: #f4f0eb; padding: 0.1rem 0.8rem;">done</span></li>
+            <li><span>⛐ add javascript interaction</span> <span
+                    style="background: #b13e3e; color: #f4f0eb; padding: 0.1rem 0.8rem;">active</span></li>
+        </ul>
+
+        <!-- form (brutalist) -->
+        <div class="brutal-form">
+            <h3
+                style="background: #0f0f0f; color: #f4f0eb; padding: 0.2rem 1.2rem; display: inline-block; margin-bottom: 1.2rem;">
+                ⏺ submit</h3>
+            <div class="form-group">
+                <label for="brutalInput">input</label>
+                <input type="text" id="brutalInput" placeholder="type something heavy" value="concrete">
+            </div>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <button class="btn" id="formSubmit" style="flex: 1;">⛐ send</button>
+                <button class="btn btn--primary" id="formClear" style="flex: 1;">✕ clear</button>
+            </div>
+            <div id="formFeedback"
+                style="margin-top: 1.2rem; background: #0f0f0f; color: #f4f0eb; padding: 0.5rem 1rem; font-weight: 700; border-left: 12px solid #b13e3e; min-height: 3.2rem;">
+                waiting for action
+            </div>
+        </div>
+
+        <hr>
+        <footer
+            style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.8rem; font-weight: 600; text-transform: uppercase; border-top: 6px solid #0f0f0f; padding-top: 1.2rem;">
+            <span>© brutalism · raw css</span>
+            <span>⚡ <span id="footerTimestamp">loading...</span></span>
+        </footer>
+    </div>
+
+    <script>
+        (function () {
+            "use strict";
+
+            // ----- DOM refs -----
+            const counterSpan = document.getElementById('clickCounter');
+            const statusDiv = document.getElementById('statusMessage');
+            const btnClick = document.getElementById('btnClick');
+            const btnReset = document.getElementById('btnReset');
+            const btnToggle = document.getElementById('btnToggle');
+            const taskList = document.getElementById('taskList');
+            const brutalInput = document.getElementById('brutalInput');
+            const formSubmit = document.getElementById('formSubmit');
+            const formClear = document.getElementById('formClear');
+            const formFeedback = document.getElementById('formFeedback');
+            const footerTs = document.getElementById('footerTimestamp');
+
+            // ----- state -----
+            let clickCount = 0;
+            let toggleState = false;  // for demonstration
+
+            // ----- helpers -----
+            function updateCounterDisplay() {
+                counterSpan.textContent = clickCount;
+            }
+
+            function setStatus(msg, isError = false) {
+                statusDiv.textContent = msg;
+                statusDiv.style.borderLeftColor = isError ? '#b13e3e' : '#0f0f0f';
+                // keep the brutalist border-left style
+            }
+
+            // add a new task item dynamically (to show JS interaction)
+            function addTask(taskText, statusLabel = 'pending') {
+                const li = document.createElement('li');
+                const spanText = document.createElement('span');
+                spanText.textContent = taskText;
+                const spanStatus = document.createElement('span');
+                spanStatus.style.background = '#0f0f0f';
+                spanStatus.style.color = '#f4f0eb';
+                spanStatus.style.padding = '0.1rem 0.8rem';
+                spanStatus.textContent = statusLabel.toUpperCase();
+                li.appendChild(spanText);
+                li.appendChild(spanStatus);
+                taskList.appendChild(li);
+            }
+
+            // reset tasks to default (but keep the brutal style)
+            function resetTasks() {
+                taskList.innerHTML = '';
+                const defaultTasks = [
+                    { text: '⚡ initiate brutalism', status: 'done' },
+                    { text: '⬡ build heavy UI', status: 'done' },
+                    { text: '⛐ add javascript interaction', status: 'active' }
+                ];
+                defaultTasks.forEach(t => {
+                    const li = document.createElement('li');
+                    const spanText = document.createElement('span');
+                    spanText.textContent = t.text;
+                    const spanStatus = document.createElement('span');
+                    spanStatus.style.background = '#0f0f0f';
+                    spanStatus.style.color = '#f4f0eb';
+                    spanStatus.style.padding = '0.1rem 0.8rem';
+                    spanStatus.textContent = t.status.toUpperCase();
+                    li.appendChild(spanText);
+                    li.appendChild(spanStatus);
+                    taskList.appendChild(li);
+                });
+            }
+
+            // ----- event listeners -----
+
+            // 1. click counter
+            btnClick.addEventListener('click', function () {
+                clickCount++;
+                updateCounterDisplay();
+                setStatus(`⬡ pressed · total ${clickCount}`);
+                // also add a task on every 3rd click
+                if (clickCount % 3 === 0) {
+                    addTask(`⛐ click #${clickCount}`, 'new');
+                    setStatus(`⛐ new task added (${clickCount})`, false);
+                }
+            });
+
+            // 2. reset counter
+            btnReset.addEventListener('click', function () {
+                clickCount = 0;
+                updateCounterDisplay();
+                setStatus('⟲ counter reset to zero');
+                // also reset tasks to default (brutal)
+                resetTasks();
+                formFeedback.textContent = '⛐ tasks and counter reset';
+            });
+
+            // 3. toggle button – changes background of .brutalist
+            btnToggle.addEventListener('click', function () {
+                const brutal = document.querySelector('.brutalist');
+                toggleState = !toggleState;
+                if (toggleState) {
+                    brutal.style.background = '#c4bdb0';
+                    brutal.style.borderColor = '#2b2b2b';
+                    setStatus('⬛ toggled · dark concrete', false);
+                } else {
+                    brutal.style.background = '#e8e3dc';
+                    brutal.style.borderColor = '#0f0f0f';
+                    setStatus('⬜ toggled · light concrete', false);
+                }
+            });
+
+            // 4. form submit
+            formSubmit.addEventListener('click', function (e) {
+                e.preventDefault();
+                const val = brutalInput.value.trim();
+                if (val === '') {
+                    formFeedback.textContent = '⛔ ERROR: input cannot be empty';
+                    formFeedback.style.borderLeftColor = '#b13e3e';
+                    setStatus('⛔ empty input', true);
+                    return;
+                }
+                // add as new task
+                addTask(`⏺ ${val}`, 'submitted');
+                formFeedback.textContent = `✅ submitted: "${val}"`;
+                formFeedback.style.borderLeftColor = '#0f0f0f';
+                setStatus(`✅ form submitted: "${val}"`);
+                brutalInput.value = ''; // optional clear
+            });
+
+            // 5. form clear
+            formClear.addEventListener('click', function () {
+                brutalInput.value = '';
+                formFeedback.textContent = '✕ input cleared';
+                setStatus('✕ cleared input');
+            });
+
+            // 6. extra: Enter key on input triggers submit
+            brutalInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    formSubmit.click();
+                }
+            });
+
+            // 7. footer timestamp
+            function updateTimestamp() {
+                const now = new Date();
+                const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+                footerTs.textContent = now.toLocaleTimeString('en-GB', options);
+            }
+            updateTimestamp();
+            setInterval(updateTimestamp, 5000);
+
+            // 8. additional: click on any card logs to status
+            document.querySelectorAll('.card').forEach((card, idx) => {
+                card.addEventListener('click', function () {
+                    const title = this.querySelector('h4')?.textContent || 'card';
+                    setStatus(`⛐ clicked ${title} · module ${idx + 1}`);
+                });
+            });
+
+            // 9. init: set default status
+            setStatus('⚡ brutalist UI ready · click something');
+            updateCounterDisplay();
+
+            // additional: reset tasks on load (ensure default)
+            resetTasks();
+
+            // add extra dynamic touch: double click on status resets to default message
+            statusDiv.addEventListener('dblclick', function () {
+                setStatus('⚡ double-click · back to default');
+                // also reset toggle background to default
+                const brutal = document.querySelector('.brutalist');
+                brutal.style.background = '#e8e3dc';
+                brutal.style.borderColor = '#0f0f0f';
+                toggleState = false;
+            });
+
+        })();
+    </script>
+</body>
+
+</html>

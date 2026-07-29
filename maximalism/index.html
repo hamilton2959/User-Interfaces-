@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Maximalism · UI</title>
+    <!-- Font Awesome for extra maximalist icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* -------------------- RESET & BASE -------------------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0b0a0c;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif;
+            padding: 2rem;
+        }
+
+        /* -------------------- MAXIMALIST CONTAINER -------------------- */
+        .maximalist {
+            max-width: 1300px;
+            width: 100%;
+            background: radial-gradient(circle at 10% 20%, #ffd966, #ffb347, #e65c4f);
+            padding: 2.5rem 2rem;
+            border-radius: 6rem 2rem 6rem 2rem;
+            box-shadow: 0 30px 40px rgba(0, 0, 0, 0.6), 0 0 0 8px #ffe484, 0 0 0 14px #b34180;
+            border: 6px dashed #0ef0f0;
+            transition: 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* extra glitch / pattern overlay */
+        .maximalist::before {
+            content: "✦ ✦ ✦";
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            font-size: 8rem;
+            color: rgba(255, 255, 255, 0.08);
+            transform: rotate(-12deg);
+            letter-spacing: 30px;
+            pointer-events: none;
+            font-weight: 300;
+        }
+
+        .maximalist::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(45deg, rgba(255, 215, 0, 0.1) 0px, rgba(255, 215, 0, 0.1) 12px, rgba(255, 0, 200, 0.1) 12px, rgba(255, 0, 200, 0.1) 24px);
+            pointer-events: none;
+            mix-blend-mode: overlay;
+            border-radius: inherit;
+        }
+
+        /* -------------------- GRID & LAYOUT -------------------- */
+        .grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1.2fr;
+            gap: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ----- cards ----- */
+        .card {
+            background: rgba(255, 245, 220, 0.85);
+            backdrop-filter: blur(6px);
+            padding: 1.8rem 1.5rem;
+            border-radius: 3rem 1rem 3rem 1rem;
+            box-shadow: 12px 12px 0 #1a0f2e, 0 8px 0 #ff00a2, 0 0 0 4px #f5e56b;
+            border: 4px solid #131313;
+            transition: 0.2s;
+            transform: rotate(0.5deg);
+            color: #1e1a24;
+        }
+
+        .card:hover {
+            transform: scale(1.02) rotate(-0.5deg);
+            box-shadow: 16px 16px 0 #2a1a3b, 0 0 0 6px #ffb7e0;
+            background: rgba(255, 250, 230, 0.95);
+        }
+
+        .card h2 {
+            font-size: 2.6rem;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #b3006b, #ff7300);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 6px 6px 0 #ffd966;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .card h2 i {
+            -webkit-text-fill-color: initial;
+            color: #1a0f2e;
+            font-size: 2.8rem;
+            text-shadow: 0 0 0 2px #fff;
+        }
+
+        .card p {
+            font-size: 1.1rem;
+            font-weight: 600;
+            background: #1f142b;
+            display: inline-block;
+            padding: 0.3rem 1.2rem;
+            border-radius: 40px;
+            color: #feda7a;
+            letter-spacing: 0.5px;
+            border: 3px solid #feffc2;
+            margin: 0.75rem 0;
+        }
+
+        .card .highlight {
+            background: #ffe482;
+            color: #1d0b1a;
+            padding: 0.2rem 1rem;
+            border-radius: 30px;
+            font-weight: 800;
+            border: 3px solid #a6006b;
+            box-shadow: 4px 4px 0 #35002a;
+        }
+
+        /* ----- list / badges ----- */
+        .badge-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1.2rem;
+        }
+
+        .badge {
+            background: #1d102b;
+            color: #feda7a;
+            padding: 0.5rem 1.5rem;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            border: 4px solid #f7d44a;
+            box-shadow: 4px 4px 0 #c72c9e;
+            transform: rotate(-1deg);
+            transition: 0.15s;
+        }
+
+        .badge i {
+            margin-right: 8px;
+            color: #ffb6e0;
+        }
+
+        .badge:hover {
+            transform: scale(1.1) rotate(2deg);
+            background: #2e1742;
+            border-color: #ff7b00;
+        }
+
+        /* ----- stats / numbers ----- */
+        .stat-block {
+            background: #1d102b;
+            padding: 0.8rem 1.5rem;
+            border-radius: 80px;
+            color: #feda7a;
+            font-weight: 800;
+            font-size: 1.8rem;
+            border: 5px solid #ffbb00;
+            box-shadow: 8px 8px 0 #be0096;
+            display: inline-block;
+            margin: 0.5rem 0.2rem;
+        }
+
+        .stat-block small {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #f5b042;
+            margin-left: 8px;
+        }
+
+        /* ----- progress / bar (maximalist) ----- */
+        .progress-bg {
+            background: #12101a;
+            height: 32px;
+            border-radius: 60px;
+            border: 6px solid #dd66b0;
+            margin: 1.2rem 0;
+            box-shadow: inset 0 0 0 4px #ffd966, 0 6px 0 #521c3f;
+        }
+
+        .progress-fill {
+            width: 84%;
+            height: 100%;
+            background: repeating-linear-gradient(45deg, #fbbb2d, #fbbb2d 10px, #ff3c9e 10px, #ff3c9e 20px);
+            border-radius: 60px;
+            box-shadow: 0 0 20px #f7b731;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 14px;
+            color: #130014;
+            font-weight: 900;
+            font-size: 1.1rem;
+        }
+
+        /* ----- buttons (maximal) ----- */
+        .btn-max {
+            background: #f7d44a;
+            border: 6px solid #1d0b1a;
+            color: #1d0b1a;
+            font-weight: 900;
+            font-size: 1.6rem;
+            padding: 0.9rem 1.8rem;
+            border-radius: 80px;
+            box-shadow: 8px 8px 0 #ad007a, 0 0 0 4px #fbffb9;
+            cursor: pointer;
+            transition: 0.1s linear;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-max i {
+            font-size: 2.2rem;
+        }
+
+        .btn-max:hover {
+            transform: translate(-4px, -4px);
+            box-shadow: 14px 14px 0 #b3007a, 0 0 0 6px #fef7b6;
+            background: #ffe27a;
+        }
+
+        .btn-max:active {
+            transform: translate(4px, 4px);
+            box-shadow: 2px 2px 0 #b3007a;
+        }
+
+        /* ----- right card special (more chaos) ----- */
+        .card-ultra {
+            background: rgba(20, 10, 30, 0.8);
+            backdrop-filter: blur(8px);
+            border: 6px solid #ffc85a;
+            color: #f6e9c9;
+            box-shadow: 16px 16px 0 #ff00a2, 0 0 0 8px #09f5f5;
+        }
+
+        .card-ultra h2 {
+            background: linear-gradient(145deg, #ffd966, #ff7b00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 20px #ffb347;
+        }
+
+        .card-ultra .badge {
+            background: #f7d44a;
+            color: #1f0d1a;
+            border-color: #d5008f;
+        }
+
+        .card-ultra .stat-block {
+            background: #f7d44a;
+            color: #1b0a1a;
+            border-color: #b3006b;
+            box-shadow: 6px 6px 0 #930061;
+        }
+
+        /* ----- footer / micro ----- */
+        .footer-max {
+            margin-top: 3rem;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            border-top: 8px dotted #f7d44a;
+            padding-top: 1.8rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .footer-max span {
+            background: #130014;
+            color: #feda7a;
+            padding: 0.7rem 2rem;
+            border-radius: 60px;
+            font-weight: 800;
+            font-size: 1.6rem;
+            border: 6px solid #ff66b0;
+            box-shadow: 0 0 0 4px #f7d44a;
+            transform: rotate(2deg);
+        }
+
+        .footer-max .btn-max {
+            font-size: 1.3rem;
+            padding: 0.5rem 1.8rem;
+        }
+
+        /* responsive */
+        @media (max-width: 980px) {
+            .grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 680px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .maximalist {
+                padding: 1.8rem 1rem;
+                border-radius: 3rem 1rem 3rem 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="maximalist">
+
+        <!-- ======== MAIN GRID ======== -->
+        <div class="grid">
+
+            <!-- CARD 1: hero / left -->
+            <div class="card">
+                <h2>
+                    <i class="fas fa-bolt"></i> MAX·UI
+                </h2>
+                <p><i class="fas fa-circle" style="color: #ff0066; margin-right: 8px;"></i> maximalism · redefined</p>
+                <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin: 1rem 0;">
+                    <span class="stat-block"><i class="fas fa-fire"></i> 86% <small>chaos</small></span>
+                    <span class="stat-block"><i class="fas fa-star"></i> 4.9 <small>vibe</small></span>
+                </div>
+                <div class="progress-bg">
+                    <div class="progress-fill" id="progressFill" style="width: 84%;">84%</div>
+                </div>
+                <div class="badge-grid">
+                    <span class="badge"><i class="fas fa-palette"></i> neon</span>
+                    <span class="badge"><i class="fas fa-shapes"></i> bold</span>
+                    <span class="badge"><i class="fas fa-wave-square"></i> glitch</span>
+                </div>
+                <button class="btn-max" id="randomizeBtn"><i class="fas fa-dice"></i> randomize</button>
+            </div>
+
+            <!-- CARD 2: mid / badges + stats -->
+            <div class="card">
+                <h2 style="font-size: 2.2rem;"><i class="fas fa-crown"></i> stats</h2>
+                <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+                    <div><span class="stat-block" style="font-size: 1.5rem;">🎯 1.2k <small>likes</small></span></div>
+                    <div><span class="stat-block" style="font-size: 1.5rem;">⚡ 340 <small>shares</small></span></div>
+                    <div><span class="stat-block" style="font-size: 1.5rem;">🌀 88 <small>remixes</small></span></div>
+                </div>
+                <div style="margin-top: 1.2rem;">
+                    <span class="badge" style="background: #f7d44a; color:#1f0d1a;"><i class="fas fa-check-circle"></i>
+                        certified maximal</span>
+                    <span class="badge" style="background: #b3006b; color:#feda7a;"><i class="fas fa-infinity"></i>
+                        ∞</span>
+                </div>
+                <p style="margin: 1.2rem 0 0; background: #2e1742; color: #feda7a; border-color: #ff66b0;">
+                    <i class="fas fa-quote-left"></i> more is more
+                </p>
+            </div>
+
+            <!-- CARD 3: right / ultra maximal -->
+            <div class="card card-ultra">
+                <h2><i class="fas fa-meteor"></i> ultra</h2>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 0.8rem 0;">
+                    <span class="badge" style="background:#ff0066; color:white;"><i class="fas fa-heart"></i>
+                        2.4k</span>
+                    <span class="badge" style="background:#09f5f5; color:#1f0d1a;"><i class="fas fa-eye"></i>
+                        4.8k</span>
+                </div>
+                <div
+                    style="background: #0f0918; padding: 0.8rem; border-radius: 60px; border: 6px solid #f7d44a; margin: 1rem 0;">
+                    <div
+                        style="display: flex; justify-content: space-between; font-weight: 800; color: #feda7a; padding: 0 0.5rem;">
+                        <span>🔥 hype</span>
+                        <span>💯 97%</span>
+                    </div>
+                    <div class="progress-bg" style="height: 24px; border-color: #ff3c9e;">
+                        <div class="progress-fill"
+                            style="width: 97%; background: repeating-linear-gradient(45deg, #fbbb2d, #fbbb2d 8px, #ff3c9e 8px, #ff3c9e 16px);">
+                            97%</div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <span class="badge" style="background:#f7d44a; color:#1a0a1a;"><i class="fas fa-cogs"></i>
+                        overload</span>
+                    <span class="badge" style="background:#ff00a2; color:white;"><i class="fas fa-bolt"></i> 12</span>
+                </div>
+                <button class="btn-max" id="glitchBtn"
+                    style="font-size: 1.3rem; margin-top: 1rem; background: #ff66b0; border-color: #130014; color: #130014; box-shadow: 6px 6px 0 #130014;"><i
+                        class="fas fa-sync-alt"></i> glitch</button>
+            </div>
+
+        </div> <!-- /grid -->
+
+        <!-- ======== FOOTER ======== -->
+        <div class="footer-max">
+            <span><i class="fas fa-hashtag"></i> maximalism</span>
+            <span style="background: #f7d44a; color: #1d0b1a; border-color: #b3006b;"><i class="fas fa-music"></i>
+                24/7</span>
+            <button class="btn-max" id="resetBtn" style="font-size: 1.1rem; padding: 0.4rem 1.8rem;"><i
+                    class="fas fa-undo-alt"></i> reset</button>
+        </div>
+
+    </div> <!-- /maximalist -->
+
+    <script>
+        (function () {
+            "use strict";
+
+            // DOM refs
+            const progressFill = document.getElementById('progressFill');
+            const randomizeBtn = document.getElementById('randomizeBtn');
+            const glitchBtn = document.getElementById('glitchBtn');
+            const resetBtn = document.getElementById('resetBtn');
+
+            // maximalist color palettes
+            const gradients = [
+                'repeating-linear-gradient(45deg, #fbbb2d, #fbbb2d 10px, #ff3c9e 10px, #ff3c9e 20px)',
+                'repeating-linear-gradient(135deg, #ff66b0, #ff66b0 8px, #f7d44a 8px, #f7d44a 16px)',
+                'repeating-linear-gradient(90deg, #09f5f5, #09f5f5 12px, #ff7b00 12px, #ff7b00 24px)',
+                'repeating-linear-gradient(180deg, #b3006b, #b3006b 10px, #feda7a 10px, #feda7a 20px)',
+                'repeating-linear-gradient(45deg, #ff0066, #ff0066 6px, #f7d44a 6px, #f7d44a 14px, #00f0f0 14px, #00f0f0 22px)'
+            ];
+
+            // random number between min and max
+            function rand(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+            // pick random item
+            function pick(arr) {
+                return arr[Math.floor(Math.random() * arr.length)];
+            }
+
+            // randomize progress fill: width + text + background
+            function randomizeProgress() {
+                const newWidth = rand(20, 98);
+                progressFill.style.width = newWidth + '%';
+                progressFill.textContent = newWidth + '%';
+                // pick random gradient
+                progressFill.style.background = pick(gradients);
+            }
+
+            // glitch effect: change border, shadow, transform for a moment
+            function glitchEffect() {
+                const container = document.querySelector('.maximalist');
+                // store original styles if needed (we'll just add/remove classes)
+                container.style.transition = '0.05s';
+                container.style.transform = 'scale(0.98) rotate(-1deg)';
+                container.style.boxShadow = '0 0 0 12px #ff00a2, 0 0 0 24px #09f5f5, 0 30px 50px rgba(0,0,0,0.8)';
+                container.style.borderColor = '#00ffff';
+                // also change progress
+                randomizeProgress();
+
+                // revert after 150ms
+                setTimeout(() => {
+                    container.style.transform = '';
+                    container.style.boxShadow = '';
+                    container.style.borderColor = '';
+                    container.style.transition = '0.3s';
+                }, 150);
+
+                // also alter a random card background for fun
+                const cards = document.querySelectorAll('.card');
+                const randCard = pick(cards);
+                const originalBg = randCard.style.background;
+                randCard.style.background = pick(['#f7d44a', '#ff66b0', '#09f5f5', '#b3006b', '#feda7a']);
+                randCard.style.transition = '0.15s';
+                setTimeout(() => {
+                    randCard.style.background = originalBg || '';
+                }, 200);
+            }
+
+            // reset to "default" maximalist state
+            function resetUI() {
+                const container = document.querySelector('.maximalist');
+                container.style.transform = '';
+                container.style.boxShadow = '';
+                container.style.borderColor = '';
+                container.style.transition = '0.3s';
+
+                // reset progress to 84% with default gradient
+                progressFill.style.width = '84%';
+                progressFill.textContent = '84%';
+                progressFill.style.background = 'repeating-linear-gradient(45deg, #fbbb2d, #fbbb2d 10px, #ff3c9e 10px, #ff3c9e 20px)';
+
+                // reset all cards background (remove inline)
+                document.querySelectorAll('.card').forEach(c => {
+                    c.style.background = '';
+                });
+
+                // extra: reset any inline style from glitch
+                document.querySelectorAll('.badge').forEach(b => {
+                    b.style.background = '';
+                    b.style.color = '';
+                });
+            }
+
+            // ---- event listeners ----
+            randomizeBtn.addEventListener('click', randomizeProgress);
+
+            glitchBtn.addEventListener('click', function (e) {
+                glitchEffect();
+                // also randomize a stat-block for extra
+                const stats = document.querySelectorAll('.stat-block');
+                if (stats.length) {
+                    const randStat = pick(stats);
+                    const oldText = randStat.innerHTML;
+                    const newNum = rand(10, 999);
+                    randStat.innerHTML = `<i class="fas fa-bolt"></i> ${newNum} <small>max</small>`;
+                    setTimeout(() => {
+                        randStat.innerHTML = oldText;
+                    }, 400);
+                }
+            });
+
+            resetBtn.addEventListener('click', resetUI);
+
+            // bonus: on load, randomize progress once for flair
+            window.addEventListener('load', function () {
+                setTimeout(randomizeProgress, 200);
+            });
+
+        })();
+    </script>
+</body>
+
+</html>

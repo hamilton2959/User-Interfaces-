@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>minimalism · UI</title>
+    <!-- Google Font (Inter) for a clean, minimal look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&display=swap"
+        rel="stylesheet" />
+    <style>
+        /* ---------- global reset / base ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #fafafa;
+            color: #1a1a1a;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-weight: 400;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem 1.5rem;
+        }
+
+        /* main card – white, subtle shadow, max-width */
+        .ui-container {
+            max-width: 1280px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 2rem;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.03), 0 4px 12px rgba(0, 0, 0, 0.02);
+            padding: 2.5rem 2.5rem 3rem;
+            transition: box-shadow 0.2s ease;
+        }
+
+        /* ---------- minimal navigation ---------- */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+            gap: 1rem 0;
+        }
+
+        .logo {
+            font-weight: 500;
+            font-size: 1.3rem;
+            letter-spacing: -0.02em;
+            background: #f2f2f2;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            color: #1a1a1a;
+            transition: background 0.2s;
+        }
+
+        .logo:hover {
+            background: #e8e8e8;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            font-size: 0.95rem;
+            font-weight: 450;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #2b2b2b;
+            padding: 0.3rem 0;
+            border-bottom: 1.5px solid transparent;
+            transition: border-color 0.2s, color 0.2s;
+        }
+
+        .nav-links a:hover {
+            border-bottom-color: #1a1a1a;
+            color: #000;
+        }
+
+        /* ---------- hero / headline ---------- */
+        .hero {
+            margin-bottom: 3.5rem;
+            padding: 0.5rem 0 1rem;
+        }
+
+        .hero h1 {
+            font-weight: 350;
+            font-size: 3.2rem;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
+            color: #141414;
+            max-width: 700px;
+        }
+
+        .hero h1 strong {
+            font-weight: 550;
+            background: linear-gradient(135deg, #1a1a1a 0%, #3d3d3d 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: #4a4a4a;
+            max-width: 540px;
+            margin-top: 0.8rem;
+            font-weight: 350;
+            letter-spacing: -0.01em;
+        }
+
+        /* ---------- minimal card grid ---------- */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.8rem;
+            margin: 2.8rem 0 2rem;
+        }
+
+        .card {
+            background: #f9f9f9;
+            padding: 1.8rem 1.8rem 2rem;
+            border-radius: 1.6rem;
+            transition: background 0.2s ease, transform 0.15s ease;
+            border: 1px solid #f0f0f0;
+        }
+
+        .card:hover {
+            background: #f5f5f5;
+            transform: translateY(-3px);
+        }
+
+        .card__number {
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.03em;
+            color: #888;
+            background: #eeeeee;
+            display: inline-block;
+            padding: 0.15rem 0.7rem;
+            border-radius: 30px;
+            margin-bottom: 1.2rem;
+            border: 1px solid #e6e6e6;
+        }
+
+        .card h3 {
+            font-weight: 500;
+            font-size: 1.4rem;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+            color: #111;
+        }
+
+        .card p {
+            font-size: 0.95rem;
+            color: #4f4f4f;
+            font-weight: 350;
+            line-height: 1.5;
+            margin-bottom: 1.2rem;
+        }
+
+        .card button {
+            background: transparent;
+            border: 1px solid #d0d0d0;
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 450;
+            color: #1a1a1a;
+            cursor: pointer;
+            transition: background 0.2s, border 0.2s, color 0.2s;
+            letter-spacing: -0.01em;
+        }
+
+        .card button:hover {
+            background: #1a1a1a;
+            border-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        /* ---------- extra minimal element: divider + small note ---------- */
+        .footnote {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2.8rem;
+            padding-top: 1.8rem;
+            border-top: 1px solid #efefef;
+            font-size: 0.85rem;
+            color: #6b6b6b;
+            flex-wrap: wrap;
+            gap: 0.5rem 1rem;
+        }
+
+        .footnote span:last-child {
+            font-weight: 350;
+            background: #f4f4f4;
+            padding: 0.2rem 1rem;
+            border-radius: 50px;
+            letter-spacing: 0.01em;
+            border: 1px solid #ececec;
+        }
+
+        /* ---------- interactive demo (javascript) ---------- */
+        .interactive-area {
+            margin-top: 2.2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            padding: 1.2rem 1.5rem;
+            background: #f7f7f7;
+            border-radius: 2rem;
+            border: 1px solid #ececec;
+        }
+
+        .interactive-area p {
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: #2b2b2b;
+            margin: 0;
+        }
+
+        .interactive-area .counter-badge {
+            background: #1a1a1a;
+            color: white;
+            font-weight: 450;
+            padding: 0.2rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            letter-spacing: 0.02em;
+            border: none;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .btn-minimal {
+            background: transparent;
+            border: 1px solid #b8b8b8;
+            padding: 0.4rem 1.4rem;
+            border-radius: 40px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 450;
+            color: #1f1f1f;
+            cursor: pointer;
+            transition: 0.2s;
+            background: white;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+        }
+
+        .btn-minimal:hover {
+            background: #1a1a1a;
+            border-color: #1a1a1a;
+            color: white;
+        }
+
+        .btn-minimal:active {
+            transform: scale(0.96);
+        }
+
+        /* ---------- responsive ---------- */
+        @media (max-width: 700px) {
+            .ui-container {
+                padding: 1.8rem 1.2rem 2rem;
+            }
+
+            .hero h1 {
+                font-size: 2.3rem;
+            }
+
+            .nav-links {
+                gap: 1.2rem;
+                font-size: 0.9rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.8rem;
+            }
+
+            .interactive-area {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="ui-container">
+
+        <!-- minimal navigation -->
+        <nav>
+            <div class="logo">⸙ minimal</div>
+            <div class="nav-links">
+                <a href="#">work</a>
+                <a href="#">studio</a>
+                <a href="#">journal</a>
+                <a href="#">contact</a>
+            </div>
+        </nav>
+
+        <!-- hero -->
+        <div class="hero">
+            <h1>less, but <strong>better</strong></h1>
+            <p>Clean lines, honest typography, and intentional space — a UI that breathes.</p>
+        </div>
+
+        <!-- card grid -->
+        <div class="grid">
+            <div class="card">
+                <span class="card__number">01</span>
+                <h3>Clarity</h3>
+                <p>Focus on what matters. Every element earns its place through purpose and function.</p>
+                <button>explore</button>
+            </div>
+            <div class="card">
+                <span class="card__number">02</span>
+                <h3>Rhythm</h3>
+                <p>Whitespace as material. Balanced proportions create a calm, considered experience.</p>
+                <button>explore</button>
+            </div>
+            <div class="card">
+                <span class="card__number">03</span>
+                <h3>Essence</h3>
+                <p>Refined details, muted palette, and a quiet confidence that speaks volumes.</p>
+                <button>explore</button>
+            </div>
+        </div>
+
+        <!-- interactive javascript demo (minimal) -->
+        <div class="interactive-area">
+            <p>✦ interactive · minimal counter</p>
+            <span class="counter-badge" id="counterDisplay">0</span>
+            <button class="btn-minimal" id="decrementBtn">–</button>
+            <button class="btn-minimal" id="incrementBtn">+</button>
+            <button class="btn-minimal" id="resetBtn">↺ reset</button>
+        </div>
+
+        <!-- extra footnote -->
+        <div class="footnote">
+            <span>© 2026 · minimalism UI</span>
+            <span>built with html, css, javascript</span>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            // pure minimal javascript — no frameworks
+            const counterEl = document.getElementById('counterDisplay');
+            const decrementBtn = document.getElementById('decrementBtn');
+            const incrementBtn = document.getElementById('incrementBtn');
+            const resetBtn = document.getElementById('resetBtn');
+
+            // state
+            let count = 0;
+            const MIN = 0;
+            const MAX = 20;
+
+            function updateCounter(value) {
+                // clamp between MIN and MAX
+                if (value < MIN) value = MIN;
+                if (value > MAX) value = MAX;
+                count = value;
+                counterEl.textContent = count;
+            }
+
+            // event listeners with minimal feedback
+            decrementBtn.addEventListener('click', function (e) {
+                updateCounter(count - 1);
+                // subtle haptic-style feedback (just a tiny style flip)
+                this.style.transform = 'scale(0.94)';
+                setTimeout(() => this.style.transform = 'scale(1)', 100);
+            });
+
+            incrementBtn.addEventListener('click', function (e) {
+                updateCounter(count + 1);
+                this.style.transform = 'scale(0.94)';
+                setTimeout(() => this.style.transform = 'scale(1)', 100);
+            });
+
+            resetBtn.addEventListener('click', function (e) {
+                updateCounter(0);
+                this.style.transform = 'scale(0.94)';
+                setTimeout(() => this.style.transform = 'scale(1)', 100);
+            });
+
+            // extra: if someone clicks on the badge itself, reset (bonus)
+            counterEl.addEventListener('click', function () {
+                updateCounter(0);
+                counterEl.style.transition = 'background 0.1s';
+                counterEl.style.background = '#3d3d3d';
+                setTimeout(() => counterEl.style.background = '#1a1a1a', 150);
+            });
+
+            // ensure initial state
+            updateCounter(0);
+        })();
+    </script>
+
+    <!-- small extra: console greeting (minimal) -->
+    <script>
+        (function () {
+            console.log('⸙ minimalism UI · less is more');
+        })();
+    </script>
+
+</body>
+
+</html>

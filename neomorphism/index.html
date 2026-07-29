@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Neumorphism UI · Soft design</title>
+    <!-- Font Awesome for icons (optional but adds richness) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e0e5ec;
+            padding: 2rem 1rem;
+        }
+
+        /* main neumorphism container */
+        .neumo-wrapper {
+            max-width: 1000px;
+            width: 100%;
+            background: #e0e5ec;
+            border-radius: 48px;
+            padding: 2.5rem 2rem;
+            box-shadow:
+                inset 2px 2px 8px rgba(255, 255, 255, 0.8),
+                inset -6px -6px 12px rgba(0, 0, 0, 0.08),
+                12px 12px 24px rgba(0, 0, 0, 0.06),
+                -8px -8px 16px rgba(255, 255, 255, 0.7);
+        }
+
+        /* headings with soft neumo touch */
+        h1,
+        h2,
+        h3 {
+            font-weight: 500;
+            letter-spacing: -0.02em;
+            color: #2d3b4f;
+            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.6);
+        }
+
+        h1 {
+            font-size: 2.4rem;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .subhead {
+            color: #5a6b7c;
+            font-weight: 400;
+            margin-bottom: 2rem;
+            border-left: 4px solid #b0bccf;
+            padding-left: 1rem;
+            font-size: 1.05rem;
+            background: #e0e5ec;
+            display: inline-block;
+            border-radius: 0 20px 20px 0;
+            box-shadow: inset 1px 1px 4px rgba(255, 255, 255, 0.6), inset -2px -2px 6px rgba(0, 0, 0, 0.02);
+            padding: 0.5rem 1.2rem;
+        }
+
+        /* grid layout for cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 2.5rem 0;
+        }
+
+        /* neumorphic card */
+        .card {
+            background: #e0e5ec;
+            border-radius: 36px;
+            padding: 1.8rem 1.2rem 1.8rem;
+            text-align: center;
+            box-shadow:
+                8px 8px 18px rgba(0, 0, 0, 0.06),
+                -8px -8px 18px rgba(255, 255, 255, 0.7),
+                inset -2px -2px 6px rgba(0, 0, 0, 0.02),
+                inset 2px 2px 6px rgba(255, 255, 255, 0.5);
+            transition: all 0.18s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        /* interactive card states (pressed / hover) */
+        .card:hover {
+            box-shadow:
+                6px 6px 14px rgba(0, 0, 0, 0.08),
+                -6px -6px 14px rgba(255, 255, 255, 0.8),
+                inset -2px -2px 6px rgba(0, 0, 0, 0.02),
+                inset 2px 2px 6px rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .card:active {
+            box-shadow:
+                inset 6px 6px 12px rgba(0, 0, 0, 0.06),
+                inset -6px -6px 12px rgba(255, 255, 255, 0.6),
+                2px 2px 6px rgba(0, 0, 0, 0.02),
+                -2px -2px 6px rgba(255, 255, 255, 0.3);
+            transform: scale(0.98);
+        }
+
+        .card i {
+            font-size: 2.8rem;
+            color: #3a4b5e;
+            filter: drop-shadow(2px 2px 4px rgba(255, 255, 255, 0.3));
+            margin-bottom: 0.1rem;
+        }
+
+        .card h3 {
+            font-size: 1.3rem;
+            font-weight: 500;
+            margin: 0.2rem 0 0.1rem;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+            color: #4d5f72;
+            line-height: 1.4;
+            margin: 0;
+            opacity: 0.8;
+        }
+
+        /* button group */
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 2.2rem 0 1.8rem;
+        }
+
+        /* neumorphic buttons */
+        .btn {
+            background: #e0e5ec;
+            border: none;
+            padding: 0.9rem 2rem;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #2a384b;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            box-shadow:
+                6px 6px 14px rgba(0, 0, 0, 0.06),
+                -6px -6px 14px rgba(255, 255, 255, 0.7),
+                inset -2px -2px 4px rgba(0, 0, 0, 0.02),
+                inset 2px 2px 4px rgba(255, 255, 255, 0.4);
+            transition: all 0.15s ease;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+        }
+
+        .btn i {
+            font-size: 1.2rem;
+            color: #3f5368;
+        }
+
+        .btn:hover {
+            box-shadow:
+                4px 4px 10px rgba(0, 0, 0, 0.08),
+                -4px -4px 10px rgba(255, 255, 255, 0.8),
+                inset -2px -2px 4px rgba(0, 0, 0, 0.02),
+                inset 2px 2px 4px rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            box-shadow:
+                inset 8px 8px 16px rgba(0, 0, 0, 0.06),
+                inset -8px -8px 16px rgba(255, 255, 255, 0.6),
+                2px 2px 6px rgba(0, 0, 0, 0.02),
+                -2px -2px 6px rgba(255, 255, 255, 0.2);
+            transform: scale(0.96);
+        }
+
+        .btn-primary {
+            background: #d6dee9;
+            color: #1f2b3a;
+            box-shadow:
+                6px 6px 14px rgba(0, 0, 0, 0.08),
+                -6px -6px 14px rgba(255, 255, 255, 0.8),
+                inset -2px -2px 6px rgba(0, 0, 0, 0.03),
+                inset 2px 2px 6px rgba(255, 255, 255, 0.6);
+        }
+
+        .btn-primary i {
+            color: #2b3d52;
+        }
+
+        /* input group (neumorphic text field) */
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 1.2rem;
+            margin: 1.8rem 0 1.2rem;
+        }
+
+        .input-neumo {
+            background: #e0e5ec;
+            border: none;
+            padding: 1rem 1.6rem;
+            border-radius: 60px;
+            font-size: 1rem;
+            color: #1f2b3a;
+            min-width: 220px;
+            box-shadow:
+                inset 6px 6px 12px rgba(0, 0, 0, 0.06),
+                inset -6px -6px 12px rgba(255, 255, 255, 0.6),
+                2px 2px 6px rgba(0, 0, 0, 0.02),
+                -2px -2px 6px rgba(255, 255, 255, 0.3);
+            transition: all 0.2s ease;
+            outline: none;
+            font-weight: 400;
+        }
+
+        .input-neumo::placeholder {
+            color: #7b8b9e;
+            font-weight: 300;
+            letter-spacing: 0.3px;
+        }
+
+        .input-neumo:focus {
+            box-shadow:
+                inset 8px 8px 16px rgba(0, 0, 0, 0.08),
+                inset -8px -8px 16px rgba(255, 255, 255, 0.6),
+                0px 0px 0px rgba(0, 0, 0, 0.02),
+                -2px -2px 8px rgba(255, 255, 255, 0.2);
+            background: #e5eaf3;
+        }
+
+        /* toggle / switch (neumorphic) */
+        .toggle-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 2rem 0 1.5rem;
+        }
+
+        .toggle-label {
+            font-weight: 450;
+            color: #2d3b4f;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .toggle-switch {
+            width: 70px;
+            height: 38px;
+            background: #e0e5ec;
+            border-radius: 60px;
+            box-shadow:
+                inset 4px 4px 10px rgba(0, 0, 0, 0.06),
+                inset -4px -4px 10px rgba(255, 255, 255, 0.6),
+                2px 2px 6px rgba(0, 0, 0, 0.02),
+                -2px -2px 6px rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-knob {
+            width: 30px;
+            height: 30px;
+            background: #e0e5ec;
+            border-radius: 50%;
+            box-shadow:
+                4px 4px 10px rgba(0, 0, 0, 0.06),
+                -4px -4px 10px rgba(255, 255, 255, 0.7),
+                inset -2px -2px 4px rgba(0, 0, 0, 0.02),
+                inset 2px 2px 4px rgba(255, 255, 255, 0.3);
+            transition: all 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+            transform: translateX(0);
+        }
+
+        .toggle-active .toggle-knob {
+            transform: translateX(32px);
+            background: #cad3e0;
+            box-shadow:
+                4px 4px 10px rgba(0, 0, 0, 0.08),
+                -4px -4px 10px rgba(255, 255, 255, 0.7),
+                inset -2px -2px 4px rgba(0, 0, 0, 0.02),
+                inset 2px 2px 4px rgba(255, 255, 255, 0.3);
+        }
+
+        .toggle-active {
+            box-shadow:
+                inset 4px 4px 10px rgba(0, 0, 0, 0.08),
+                inset -4px -4px 10px rgba(255, 255, 255, 0.5),
+                2px 2px 6px rgba(0, 0, 0, 0.02),
+                -2px -2px 6px rgba(255, 255, 255, 0.2);
+        }
+
+        /* status badge */
+        .status-badge {
+            background: #e0e5ec;
+            padding: 0.5rem 1.6rem;
+            border-radius: 60px;
+            font-size: 0.9rem;
+            font-weight: 450;
+            color: #2c3d51;
+            box-shadow:
+                inset 2px 2px 6px rgba(255, 255, 255, 0.6),
+                inset -4px -4px 8px rgba(0, 0, 0, 0.02),
+                4px 4px 10px rgba(0, 0, 0, 0.03),
+                -4px -4px 10px rgba(255, 255, 255, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-badge i {
+            color: #3b5d7a;
+        }
+
+        .flex-center {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem 2rem;
+        }
+
+        hr {
+            border: none;
+            height: 2px;
+            background: #d0d7e3;
+            margin: 2rem 0 1rem;
+            box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6), 0 1px 2px rgba(0, 0, 0, 0.02);
+            border-radius: 10px;
+        }
+
+        /* small responsive */
+        @media (max-width: 550px) {
+            .neumo-wrapper {
+                padding: 1.8rem 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .card-grid {
+                gap: 1.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="neumo-wrapper">
+
+        <header
+            style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+                <h1>
+                    <i class="fas fa-cube"
+                        style="color: #34495e; filter: drop-shadow(2px 2px 4px rgba(255,255,255,0.3));"></i>
+                    Neumorphism
+                </h1>
+                <div class="subhead">Soft UI · extruded · tactile</div>
+            </div>
+            <div class="status-badge">
+                <i class="fas fa-circle" style="color: #5fa87f; font-size: 0.6rem;"></i>
+                <span id="statusText">interactive</span>
+            </div>
+        </header>
+
+        <!-- card grid -->
+        <div class="card-grid">
+            <div class="card">
+                <i class="fas fa-cloud-sun"></i>
+                <h3>Weather</h3>
+                <p>22°C · sunny</p>
+            </div>
+            <div class="card">
+                <i class="fas fa-heartbeat"></i>
+                <h3>Health</h3>
+                <p>78 bpm · good</p>
+            </div>
+            <div class="card">
+                <i class="fas fa-music"></i>
+                <h3>Now playing</h3>
+                <p>Neumo wave</p>
+            </div>
+            <div class="card">
+                <i class="fas fa-bolt"></i>
+                <h3>Energy</h3>
+                <p>87% · charging</p>
+            </div>
+        </div>
+
+        <!-- button group -->
+        <div class="button-group">
+            <button class="btn" id="clickBtn"><i class="fas fa-hand-pointer"></i> Click me</button>
+            <button class="btn btn-primary" id="resetBtn"><i class="fas fa-undo-alt"></i> Reset</button>
+            <button class="btn" id="actionBtn"><i class="fas fa-bell"></i> Notify</button>
+        </div>
+
+        <!-- input + toggle -->
+        <div class="input-group">
+            <input type="text" class="input-neumo" id="textInput" placeholder="Type something..." value="neumo style" />
+            <div class="toggle-wrap">
+                <span class="toggle-label"><i class="fas fa-power-off"></i> Toggle</span>
+                <div class="toggle-switch" id="toggleSwitch" role="button" tabindex="0" aria-label="Toggle switch">
+                    <div class="toggle-knob"></div>
+                </div>
+                <span id="toggleState" style="font-weight: 400; color: #3b4f63; min-width: 50px;">OFF</span>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="flex-center" style="justify-content: space-between; flex-wrap: wrap;">
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <span style="color: #3b4e63;"><i class="fas fa-arrow-right"></i> interaction log</span>
+                <span id="logDisplay"
+                    style="background: #dbe0ea; padding: 0.3rem 1.2rem; border-radius: 40px; font-size: 0.9rem; box-shadow: inset 2px 2px 6px rgba(0,0,0,0.02), inset -2px -2px 6px rgba(255,255,255,0.4);">
+                    ready
+                </span>
+            </div>
+            <div style="display: flex; gap: 0.8rem;">
+                <span class="status-badge" style="padding: 0.3rem 1.2rem;"><i class="fas fa-check-circle"
+                        style="color: #417a5c;"></i> active</span>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        (function () {
+            "use strict";
+
+            // DOM elements
+            const statusText = document.getElementById('statusText');
+            const logDisplay = document.getElementById('logDisplay');
+            const toggleSwitch = document.getElementById('toggleSwitch');
+            const toggleState = document.getElementById('toggleState');
+            const textInput = document.getElementById('textInput');
+
+            const clickBtn = document.getElementById('clickBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const actionBtn = document.getElementById('actionBtn');
+
+            // helper: update log and status
+            function setLog(message) {
+                logDisplay.textContent = message;
+            }
+
+            function setStatus(message) {
+                statusText.textContent = message;
+            }
+
+            // toggle state
+            let toggleActive = false;
+
+            function updateToggleUI() {
+                if (toggleActive) {
+                    toggleSwitch.classList.add('toggle-active');
+                    toggleState.textContent = 'ON';
+                    setStatus('toggle ON');
+                    setLog('toggle activated');
+                } else {
+                    toggleSwitch.classList.remove('toggle-active');
+                    toggleState.textContent = 'OFF';
+                    setStatus('toggle OFF');
+                    setLog('toggle deactivated');
+                }
+            }
+
+            // toggle click
+            toggleSwitch.addEventListener('click', function (e) {
+                e.stopPropagation();
+                toggleActive = !toggleActive;
+                updateToggleUI();
+            });
+
+            // keyboard support for toggle
+            toggleSwitch.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleActive = !toggleActive;
+                    updateToggleUI();
+                }
+            });
+
+            // ----- button interactions -----
+            clickBtn.addEventListener('click', function () {
+                setLog('clicked primary button');
+                setStatus('clicked!');
+                // subtle haptic-like feedback: card flash?
+                clickBtn.style.transform = 'scale(0.94)';
+                setTimeout(() => { clickBtn.style.transform = ''; }, 120);
+            });
+
+            resetBtn.addEventListener('click', function () {
+                // reset input & toggle to default
+                textInput.value = 'neumo style';
+                if (toggleActive) {
+                    toggleActive = false;
+                    updateToggleUI();
+                }
+                setLog('reset everything');
+                setStatus('reset');
+                // extra feedback
+                resetBtn.style.transform = 'scale(0.94)';
+                setTimeout(() => { resetBtn.style.transform = ''; }, 120);
+            });
+
+            actionBtn.addEventListener('click', function () {
+                setLog('action: notify');
+                setStatus('notification');
+                // optional: change badge
+                actionBtn.style.transform = 'scale(0.94)';
+                setTimeout(() => { actionBtn.style.transform = ''; }, 120);
+                // show a quick neumo alert (just visual)
+                const original = actionBtn.innerHTML;
+                actionBtn.innerHTML = '<i class="fas fa-check"></i> done';
+                setTimeout(() => {
+                    actionBtn.innerHTML = original;
+                }, 800);
+            });
+
+            // input interaction: log on change (with debounce)
+            let inputTimeout;
+            textInput.addEventListener('input', function () {
+                clearTimeout(inputTimeout);
+                inputTimeout = setTimeout(() => {
+                    const val = textInput.value.trim() || '(empty)';
+                    setLog(`input: ${val}`);
+                    setStatus('typing');
+                }, 300);
+            });
+
+            // extra: card click logs (using event delegation on card-grid)
+            document.querySelector('.card-grid').addEventListener('click', function (e) {
+                const card = e.target.closest('.card');
+                if (card) {
+                    const title = card.querySelector('h3')?.textContent || 'card';
+                    setLog(`card "${title}" touched`);
+                    setStatus('card interaction');
+                    // add subtle press effect
+                    card.style.transform = 'scale(0.96)';
+                    setTimeout(() => { card.style.transform = ''; }, 150);
+                }
+            });
+
+            // initialize status
+            setStatus('ready');
+            setLog('welcome to neumo');
+            // ensure toggle state matches initial
+            toggleActive = false;
+            updateToggleUI();
+
+            // (optional) extra: if user clicks anywhere on wrapper, we could log, but not needed.
+            console.log('Neumorphism UI ready ✨');
+        })();
+    </script>
+
+</body>
+
+</html>

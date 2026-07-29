@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glassmorphism UI</title>
+    <!-- Font Awesome Icons (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* ----- global reset & base ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(145deg, #2b2d42 0%, #1a1b2f 100%);
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        /* ----- background decorative blobs (glassmorphism context) ----- */
+        .bg-blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.5;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-blob-1 {
+            width: 400px;
+            height: 400px;
+            background: #6c5b7b;
+            top: -80px;
+            left: -100px;
+        }
+
+        .bg-blob-2 {
+            width: 500px;
+            height: 500px;
+            background: #355c7d;
+            bottom: -120px;
+            right: -120px;
+        }
+
+        .bg-blob-3 {
+            width: 300px;
+            height: 300px;
+            background: #f8b195;
+            top: 30%;
+            right: 10%;
+            opacity: 0.3;
+        }
+
+        /* ----- glassmorphism card container ----- */
+        .glass-container {
+            position: relative;
+            z-index: 10;
+            max-width: 480px;
+            width: 100%;
+            padding: 2rem 2rem 2.5rem;
+            border-radius: 3rem;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.4),
+                inset 0 1px 1px rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: transform 0.25s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-container:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 40px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        /* ----- profile / header ----- */
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(4px);
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: #fff;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-info h2 {
+            color: #fff;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            font-size: 1.7rem;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-info p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-top: 0.2rem;
+        }
+
+        .profile-info p i {
+            font-size: 0.8rem;
+            color: #a8d8ea;
+        }
+
+        /* ----- stats (glassmorphism cards inside) ----- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 2rem 0 2.2rem;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 1.8rem;
+            padding: 1.2rem 0.3rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+            transition: 0.2s ease;
+        }
+
+        .stat-item:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .stat-number {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 0.25rem;
+        }
+
+        /* ----- action buttons (glass) ----- */
+        .action-row {
+            display: flex;
+            gap: 1rem;
+            margin: 1.8rem 0 2rem;
+            flex-wrap: wrap;
+        }
+
+        .glass-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 0.9rem 0.2rem;
+            border-radius: 3rem;
+            border: none;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #fff;
+            font-weight: 500;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .glass-btn i {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .glass-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.02);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-btn:active {
+            transform: scale(0.97);
+        }
+
+        /* primary variant */
+        .glass-btn.primary {
+            background: rgba(255, 215, 100, 0.15);
+            border-color: rgba(255, 215, 100, 0.3);
+            color: #ffecbb;
+        }
+
+        .glass-btn.primary i {
+            color: #ffd966;
+        }
+
+        .glass-btn.primary:hover {
+            background: rgba(255, 215, 100, 0.25);
+            border-color: rgba(255, 215, 100, 0.6);
+        }
+
+        /* ----- interactive card (extra glassmorphism) ----- */
+        .card-interactive {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 2.2rem;
+            padding: 1.4rem 1.8rem;
+            margin-top: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .card-interactive .msg {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .card-interactive .msg i {
+            color: #f7c948;
+            font-size: 1.2rem;
+        }
+
+        .glass-tag {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border-radius: 40px;
+            padding: 0.4rem 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.75rem;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            white-space: nowrap;
+        }
+
+        .glass-tag i {
+            font-size: 0.7rem;
+            color: #6dd5ed;
+        }
+
+        /* ----- footer / micro interaction (js) ----- */
+        .footer-message {
+            text-align: center;
+            margin-top: 2rem;
+            color: rgba(255, 255, 255, 0.25);
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 1.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-message span {
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 400;
+        }
+
+        .footer-message i {
+            margin: 0 4px;
+            color: rgba(255, 200, 120, 0.5);
+        }
+
+        /* responsive adjustments */
+        @media (max-width: 500px) {
+            .glass-container {
+                padding: 1.5rem;
+            }
+
+            .stats-grid {
+                gap: 0.6rem;
+            }
+
+            .stat-number {
+                font-size: 1.5rem;
+            }
+
+            .profile {
+                gap: 0.8rem;
+            }
+
+            .profile-info h2 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- background decorative blobs -->
+    <div class="bg-blob bg-blob-1"></div>
+    <div class="bg-blob bg-blob-2"></div>
+    <div class="bg-blob bg-blob-3"></div>
+
+    <!-- main glassmorphism UI card -->
+    <div class="glass-container" id="glassCard">
+
+        <!-- profile section -->
+        <div class="profile">
+            <div class="avatar">
+                <i class="fas fa-user-astronaut"></i>
+            </div>
+            <div class="profile-info">
+                <h2>Alex Rivera</h2>
+                <p><i class="fas fa-map-pin"></i> San Francisco, CA</p>
+            </div>
+        </div>
+
+        <!-- stats glass cards -->
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-number" id="followersCount">2.8k</span>
+                <span class="stat-label">Followers</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="projectsCount">47</span>
+                <span class="stat-label">Projects</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="ratingCount">4.9</span>
+                <span class="stat-label">Rating</span>
+            </div>
+        </div>
+
+        <!-- action buttons (glass) -->
+        <div class="action-row">
+            <button class="glass-btn primary" id="followBtn"><i class="fas fa-user-plus"></i> Follow</button>
+            <button class="glass-btn" id="messageBtn"><i class="fas fa-paper-plane"></i> Message</button>
+        </div>
+
+        <!-- interactive glass card / extra UI -->
+        <div class="card-interactive">
+            <div class="msg">
+                <i class="fas fa-bolt"></i>
+                <span id="statusText">Active now</span>
+            </div>
+            <div class="glass-tag">
+                <i class="fas fa-shield-alt"></i> verified
+            </div>
+        </div>
+
+        <!-- footer message (dynamic via js) -->
+        <div class="footer-message" id="footerMsg">
+            <i class="fas fa-mouse-pointer"></i> <span id="clickFeedback">interact with glass</span> <i
+                class="fas fa-arrow-right"></i>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            "use strict";
+
+            // DOM elements
+            const glassCard = document.getElementById('glassCard');
+            const followBtn = document.getElementById('followBtn');
+            const messageBtn = document.getElementById('messageBtn');
+            const statusText = document.getElementById('statusText');
+            const clickFeedback = document.getElementById('clickFeedback');
+
+            // stats elements (for fun micro-updates)
+            const followersEl = document.getElementById('followersCount');
+            const projectsEl = document.getElementById('projectsCount');
+            const ratingEl = document.getElementById('ratingCount');
+
+            // ----- helper: update footer message with a subtle animation -----
+            function setFooterMessage(text, emoji = '✨') {
+                if (clickFeedback) {
+                    clickFeedback.textContent = text;
+                    // add a tiny "pop" effect
+                    clickFeedback.style.transition = 'color 0.15s';
+                    clickFeedback.style.color = 'rgba(255, 215, 120, 0.9)';
+                    setTimeout(() => {
+                        clickFeedback.style.color = 'rgba(255, 255, 255, 0.5)';
+                    }, 400);
+                }
+                // optional: change the icon in footer
+                const footerIcon = document.querySelector('.footer-message i');
+                if (footerIcon) {
+                    footerIcon.className = 'fas fa-' + (emoji === '✨' ? 'star' : 'heart');
+                }
+            }
+
+            // ----- follow button interaction (toggle) -----
+            let isFollowing = false;
+            followBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                if (!isFollowing) {
+                    isFollowing = true;
+                    followBtn.innerHTML = '<i class="fas fa-user-check"></i> Following';
+                    followBtn.classList.add('primary');
+                    // update stats: followers +1 (mock)
+                    let current = parseInt(followersEl.textContent.replace('k', '')) * 1000;
+                    if (!isNaN(current)) {
+                        // show as "2.8k" style
+                        let newVal = (current + 1) / 1000;
+                        followersEl.textContent = newVal.toFixed(1) + 'k';
+                    }
+                    setFooterMessage('You are now following Alex', '❤️');
+                    statusText.textContent = 'Followed!';
+                } else {
+                    isFollowing = false;
+                    followBtn.innerHTML = '<i class="fas fa-user-plus"></i> Follow';
+                    followBtn.classList.remove('primary');
+                    // revert stats: followers -1
+                    let current = parseInt(followersEl.textContent.replace('k', '')) * 1000;
+                    if (!isNaN(current) && current > 0) {
+                        let newVal = (current - 1) / 1000;
+                        followersEl.textContent = newVal.toFixed(1) + 'k';
+                    }
+                    setFooterMessage('Unfollowed', '💔');
+                    statusText.textContent = 'Active now';
+                }
+            });
+
+            // ----- message button interaction -----
+            messageBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                setFooterMessage('Message sent!', '✉️');
+                // small animation on button
+                messageBtn.style.transform = 'scale(0.94)';
+                setTimeout(() => {
+                    messageBtn.style.transform = '';
+                }, 150);
+                // update status temporarily
+                const oldStatus = statusText.textContent;
+                statusText.textContent = '💬 replied!';
+                setTimeout(() => {
+                    statusText.textContent = oldStatus;
+                }, 1200);
+                // mock project increment
+                let proj = parseInt(projectsEl.textContent);
+                if (!isNaN(proj)) {
+                    projectsEl.textContent = proj + 1;
+                    setFooterMessage('Project +1', '🚀');
+                }
+            });
+
+            // ----- click on glass card (extra interactivity) -----
+            glassCard.addEventListener('click', function (e) {
+                // if click is directly on the glass container (not on button or inner interactive)
+                // we want a gentle feedback
+                if (e.target === glassCard || e.target.closest('.glass-container') === glassCard) {
+                    setFooterMessage('glass ripple ✦', '✨');
+                    // animate rating slightly
+                    let rating = parseFloat(ratingEl.textContent);
+                    if (!isNaN(rating) && rating < 5.0) {
+                        let newRating = Math.min(5.0, rating + 0.05);
+                        ratingEl.textContent = newRating.toFixed(1);
+                    }
+                }
+            });
+
+            // ----- extra: hover on stat items (demo) -----
+            document.querySelectorAll('.stat-item').forEach((item, index) => {
+                item.addEventListener('mouseenter', function () {
+                    this.style.background = 'rgba(255,255,255,0.13)';
+                    this.style.borderColor = 'rgba(255,255,255,0.25)';
+                });
+                item.addEventListener('mouseleave', function () {
+                    this.style.background = 'rgba(255,255,255,0.06)';
+                    this.style.borderColor = 'rgba(255,255,255,0.08)';
+                });
+            });
+
+            // ----- set initial footer message (after load) -----
+            window.addEventListener('load', function () {
+                setFooterMessage('click the glass or buttons', '✨');
+                // small intro animation
+                glassCard.style.transition = 'opacity 0.6s ease, transform 0.4s ease';
+                glassCard.style.opacity = '0.9';
+                setTimeout(() => {
+                    glassCard.style.opacity = '1';
+                }, 50);
+            });
+
+            // ----- optional: keyboard shortcut (Escape resets status) -----
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    statusText.textContent = 'Active now';
+                    setFooterMessage('reset', '🔄');
+                }
+            });
+
+        })();
+    </script>
+</body>
+
+</html>

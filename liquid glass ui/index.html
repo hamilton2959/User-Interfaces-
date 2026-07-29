@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liquid Glass UI</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at 30% 40%, #0b1926, #0a111a);
+            padding: 1.5rem;
+        }
+
+        /* ---- Glass card container ---- */
+        .glass-card {
+            position: relative;
+            max-width: 800px;
+            width: 100%;
+            padding: 2.8rem 2.5rem;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-radius: 3.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+            transition: box-shadow 0.4s ease, transform 0.2s ease;
+            overflow: hidden;
+            /* liquid shimmer base */
+            background-image: radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.25) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.1) 0%, transparent 40%);
+        }
+
+        /* ---- liquid orbs (animated glass blobs) ---- */
+        .glass-card::before,
+        .glass-card::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(70px);
+            opacity: 0.4;
+            z-index: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .glass-card::before {
+            width: 280px;
+            height: 280px;
+            background: radial-gradient(circle at 30% 40%, #6fc3ff, #3b82f6);
+            top: -80px;
+            left: -60px;
+            animation: floatOrb 9s infinite alternate ease-in-out;
+        }
+
+        .glass-card::after {
+            width: 340px;
+            height: 340px;
+            background: radial-gradient(circle at 70% 60%, #f093fb, #f5576c);
+            bottom: -100px;
+            right: -80px;
+            animation: floatOrb 11s infinite alternate-reverse ease-in-out;
+        }
+
+        /* extra floating shimmer (liquid effect) */
+        .glass-shimmer {
+            position: absolute;
+            top: -20%;
+            left: -10%;
+            width: 140%;
+            height: 140%;
+            background: radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.12) 0%, transparent 60%),
+                radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
+            filter: blur(20px);
+            pointer-events: none;
+            z-index: 0;
+            animation: shimmerSlide 14s infinite alternate;
+        }
+
+        /* ---- content layer (above glass) ---- */
+        .glass-content {
+            position: relative;
+            z-index: 2;
+            color: #f0f4fe;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-weight: 500;
+            font-size: 1.6rem;
+            letter-spacing: -0.02em;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.3rem 1.2rem 0.3rem 0.9rem;
+            border-radius: 100px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .logo i {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #a5d9ff, #4f8cff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            filter: drop-shadow(0 0 12px rgba(79, 140, 255, 0.4));
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(4px);
+            padding: 0.4rem 1.2rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #cddfff;
+        }
+
+        /* main title */
+        .hero h1 {
+            font-size: 3.2rem;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
+            margin-bottom: 0.7rem;
+            background: linear-gradient(to right, #ffffff, #bfd9ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            max-width: 80%;
+            font-weight: 300;
+            letter-spacing: 0.2px;
+            color: #d0e2ff;
+            margin-bottom: 2rem;
+        }
+
+        /* stats grid */
+        .stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem 1.8rem;
+            margin: 2.2rem 0 2rem;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(8px);
+            padding: 0.8rem 1.8rem 0.8rem 1.4rem;
+            border-radius: 80px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+        }
+
+        .stat-item i {
+            font-size: 1.4rem;
+            color: #8bbaff;
+            filter: drop-shadow(0 0 8px rgba(79, 140, 255, 0.3));
+        }
+
+        .stat-item span {
+            font-weight: 300;
+            font-size: 0.95rem;
+        }
+
+        .stat-item strong {
+            font-weight: 500;
+            font-size: 1.2rem;
+            margin-right: 0.2rem;
+            color: white;
+        }
+
+        /* action row */
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1.2rem 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 0.9rem 2.4rem;
+            border-radius: 80px;
+            font-weight: 500;
+            font-size: 1rem;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+            cursor: pointer;
+            transition: 0.25s ease;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            letter-spacing: 0.3px;
+        }
+
+        .btn-primary i {
+            font-size: 1.2rem;
+            transition: transform 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.02) translateY(-2px);
+            box-shadow: 0 14px 32px rgba(0, 20, 60, 0.5);
+        }
+
+        .btn-primary:hover i {
+            transform: translateX(4px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.9rem 1.8rem;
+            border-radius: 80px;
+            font-weight: 400;
+            color: #c8daff;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        /* interactive live indicator */
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: auto;
+            background: rgba(0, 255, 180, 0.06);
+            padding: 0.3rem 1rem 0.3rem 0.8rem;
+            border-radius: 40px;
+            border: 1px solid rgba(0, 255, 180, 0.1);
+        }
+
+        .pulse-dot {
+            width: 10px;
+            height: 10px;
+            background: #00e6a0;
+            border-radius: 50%;
+            box-shadow: 0 0 16px #00e6a0;
+            animation: pulse 1.8s infinite;
+        }
+
+        /* ---- animations ---- */
+        @keyframes floatOrb {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            100% {
+                transform: translate(20px, -20px) scale(1.1);
+            }
+        }
+
+        @keyframes shimmerSlide {
+            0% {
+                transform: translate(-10%, -5%) rotate(0deg);
+                opacity: 0.4;
+            }
+
+            100% {
+                transform: translate(12%, 8%) rotate(6deg);
+                opacity: 0.9;
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.4;
+                transform: scale(0.9);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.3);
+            }
+
+            100% {
+                opacity: 0.4;
+                transform: scale(0.9);
+            }
+        }
+
+        /* ---- responsive ---- */
+        @media (max-width: 640px) {
+            .glass-card {
+                padding: 2rem 1.5rem;
+                border-radius: 2.5rem;
+            }
+
+            .hero h1 {
+                font-size: 2.4rem;
+            }
+
+            .hero p {
+                max-width: 100%;
+                font-size: 1rem;
+            }
+
+            .stats {
+                gap: 0.8rem;
+            }
+
+            .stat-item {
+                padding: 0.5rem 1.2rem;
+            }
+
+            .actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                justify-content: center;
+            }
+
+            .live-indicator {
+                margin-left: 0;
+                justify-content: center;
+                margin-top: 0.5rem;
+            }
+
+            .logo {
+                font-size: 1.3rem;
+                padding: 0.2rem 0.8rem 0.2rem 0.6rem;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.8rem;
+            }
+
+            .badge {
+                align-self: flex-start;
+            }
+        }
+
+        /* extra smoothness */
+        .glass-card,
+        .btn-primary,
+        .btn-secondary,
+        .stat-item {
+            transition: all 0.25s ease;
+        }
+
+        /* interactive hover: liquid glass response */
+        .glass-card:hover {
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+            transform: scale(1.005);
+        }
+
+        .glass-card:hover::before {
+            filter: blur(80px);
+            opacity: 0.55;
+        }
+
+        .glass-card:hover::after {
+            filter: blur(90px);
+            opacity: 0.55;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="glass-card" id="glassCard">
+        <!-- liquid shimmer layer -->
+        <div class="glass-shimmer"></div>
+
+        <div class="glass-content">
+            <!-- header -->
+            <div class="header">
+                <div class="logo">
+                    <i class="fas fa-droplet"></i>
+                    <span>Liquid</span>
+                </div>
+                <div class="badge">
+                    <i class="fas fa-circle"
+                        style="color: #6fc3ff; font-size: 0.5rem; vertical-align: middle; margin-right: 6px;"></i>
+                    v2.0 · glass
+                </div>
+            </div>
+
+            <!-- hero -->
+            <div class="hero">
+                <h1>Liquid Glass<br>Interface</h1>
+                <p>Next‑gen UI with dynamic blur, fluid orbs, and crystal‑clear depth.</p>
+            </div>
+
+            <!-- stats -->
+            <div class="stats">
+                <div class="stat-item">
+                    <i class="fas fa-bolt"></i>
+                    <span><strong>2.4k</strong> ms latency</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-water"></i>
+                    <span><strong>98%</strong> smoothness</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-gem"></i>
+                    <span><strong>16</strong> blur layers</span>
+                </div>
+            </div>
+
+            <!-- actions -->
+            <div class="actions">
+                <button class="btn-primary" id="actionBtn">
+                    <span>Launch experience</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                <button class="btn-secondary" id="secondaryBtn">
+                    <i class="fas fa-circle-info"></i> About
+                </button>
+
+                <div class="live-indicator">
+                    <span class="pulse-dot"></span>
+                    <span style="font-size: 0.8rem; font-weight: 300; opacity: 0.9;">live</span>
+                </div>
+            </div>
+
+            <!-- tiny footnote (interactive) -->
+            <div
+                style="margin-top: 2.2rem; font-size: 0.75rem; opacity: 0.3; display: flex; gap: 1.4rem; flex-wrap: wrap; border-top: 1px solid rgba(255,255,255,0.03); padding-top: 1.2rem;">
+                <span><i class="far fa-clock"></i> <span id="timeDisplay">--:--</span></span>
+                <span><i class="fas fa-circle" style="color: #6fc3ff; font-size: 0.4rem; vertical-align: middle;"></i>
+                    liquid state</span>
+                <span id="clickCounter"><i class="far fa-hand-pointer"></i> clicks: 0</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            // ---- interactive JS: liquid glass feedback ----
+
+            // DOM refs
+            const glassCard = document.getElementById('glassCard');
+            const actionBtn = document.getElementById('actionBtn');
+            const secondaryBtn = document.getElementById('secondaryBtn');
+            const timeDisplay = document.getElementById('timeDisplay');
+            const clickCounterSpan = document.getElementById('clickCounter');
+
+            // click counter
+            let clickCount = 0;
+
+            // update time
+            function updateClock() {
+                const now = new Date();
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                timeDisplay.textContent = `${hours}:${minutes}`;
+            }
+            updateClock();
+            setInterval(updateClock, 30000); // update each 30s
+
+            // update click counter display
+            function updateClickCounter() {
+                clickCounterSpan.innerHTML = `<i class="far fa-hand-pointer"></i> clicks: ${clickCount}`;
+            }
+
+            // ---- event listeners with liquid feedback ----
+            actionBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                clickCount++;
+                updateClickCounter();
+
+                // haptic-like liquid feedback: scale + glow
+                glassCard.style.transition = 'box-shadow 0.15s, transform 0.1s';
+                glassCard.style.boxShadow = '0 0 0 2px rgba(111, 195, 255, 0.5), 0 30px 70px rgba(0, 0, 0, 0.7)';
+                glassCard.style.transform = 'scale(0.98)';
+
+                setTimeout(() => {
+                    glassCard.style.boxShadow = '0 30px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.03) inset';
+                    glassCard.style.transform = 'scale(1)';
+                }, 200);
+
+                // subtle bubble burst (just for fun)
+                actionBtn.innerHTML = `<span>✨ Launched</span><i class="fas fa-check"></i>`;
+                setTimeout(() => {
+                    actionBtn.innerHTML = `<span>Launch experience</span><i class="fas fa-arrow-right"></i>`;
+                }, 1200);
+
+                // extra liquid effect: change orb colors temporarily
+                glassCard.style.setProperty('--orb-color', '#a0d0ff');
+                setTimeout(() => {
+                    glassCard.style.setProperty('--orb-color', '');
+                }, 400);
+            });
+
+            secondaryBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                clickCount++;
+                updateClickCounter();
+
+                // liquid ripple effect on secondary
+                secondaryBtn.style.transform = 'scale(0.92)';
+                secondaryBtn.style.background = 'rgba(255,255,255,0.15)';
+                setTimeout(() => {
+                    secondaryBtn.style.transform = 'scale(1)';
+                    secondaryBtn.style.background = 'transparent';
+                }, 200);
+
+                // show a toast-like message (via alert for simplicity, but integrated)
+                const originalText = secondaryBtn.innerHTML;
+                secondaryBtn.innerHTML = `<i class="fas fa-spinner fa-pulse"></i> Info`;
+                setTimeout(() => {
+                    secondaryBtn.innerHTML = originalText;
+                    alert('🌊 Liquid Glass UI — built with HTML, CSS & JavaScript.\nClick the launch button for more interaction.');
+                }, 300);
+            });
+
+            // click on glass card (anywhere) — also counts as interaction, but we only count button clicks for demo
+            glassCard.addEventListener('click', function (e) {
+                // only if clicked directly on card (not on button) - we use target to avoid double count
+                if (e.target === glassCard || e.target.closest('.glass-content') && !e.target.closest('.actions')) {
+                    // subtle feedback: change shimmer
+                    const shimmer = document.querySelector('.glass-shimmer');
+                    shimmer.style.opacity = '0.9';
+                    shimmer.style.transform = 'scale(1.02)';
+                    setTimeout(() => {
+                        shimmer.style.opacity = '';
+                        shimmer.style.transform = '';
+                    }, 300);
+                }
+            });
+
+            // hover liquid effect on stat items (extra polish)
+            document.querySelectorAll('.stat-item').forEach(item => {
+                item.addEventListener('mouseenter', function () {
+                    this.style.background = 'rgba(255,255,255,0.1)';
+                    this.style.transform = 'translateY(-2px)';
+                });
+                item.addEventListener('mouseleave', function () {
+                    this.style.background = 'rgba(255,255,255,0.04)';
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // init click counter
+            updateClickCounter();
+
+            // extra: a tiny random liquid effect on load
+            setTimeout(() => {
+                glassCard.style.transition = 'box-shadow 0.6s ease';
+                glassCard.style.boxShadow = '0 40px 80px rgba(0,40,80,0.7), 0 0 0 1px rgba(255,255,255,0.1) inset';
+                setTimeout(() => {
+                    glassCard.style.boxShadow = '0 30px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.03) inset';
+                }, 500);
+            }, 300);
+
+            console.log('💧 Liquid Glass UI loaded – enjoy!');
+        })();
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skeuomorphism · UI calculator</title>
+    <!-- Google Font (optional, for a clean digital feel) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #3d2b1f;
+            /* warm dark background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Inter', sans-serif;
+            padding: 1.5rem;
+            /* subtle fabric texture (CSS only) */
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(255, 215, 175, 0.05) 0%, transparent 25%),
+                radial-gradient(circle at 80% 70%, rgba(210, 180, 140, 0.08) 0%, transparent 35%),
+                repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.02) 0px, rgba(0, 0, 0, 0.02) 2px, transparent 2px, transparent 6px);
+        }
+
+        /* main card – leather + wood trim */
+        .calculator {
+            max-width: 400px;
+            width: 100%;
+            background: #8b6b4d;
+            /* leather base */
+            padding: 2rem 1.8rem 2.2rem;
+            border-radius: 56px 56px 48px 48px;
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.7),
+                0 8px 16px rgba(0, 0, 0, 0.5),
+                inset 0 -6px 0 #4d3425,
+                inset 0 2px 8px rgba(255, 215, 175, 0.3);
+            border: 1px solid #a8876a;
+            position: relative;
+            transition: transform 0.1s ease;
+            /* wood grain overlay (subtle) */
+            background-image:
+                repeating-linear-gradient(90deg,
+                    rgba(120, 80, 50, 0.15) 0px,
+                    rgba(120, 80, 50, 0) 4px,
+                    rgba(120, 80, 50, 0.1) 8px,
+                    rgba(120, 80, 50, 0) 12px),
+                repeating-linear-gradient(45deg,
+                    rgba(70, 40, 20, 0.08) 0px,
+                    rgba(70, 40, 20, 0) 10px,
+                    rgba(70, 40, 20, 0.05) 20px);
+            background-blend-mode: overlay;
+        }
+
+        /* inner bevel – like a metal/leather frame */
+        .calculator::before {
+            content: '';
+            position: absolute;
+            inset: 8px;
+            border-radius: 44px 44px 38px 38px;
+            box-shadow: inset 0 2px 12px rgba(255, 220, 170, 0.4),
+                inset 0 -4px 8px rgba(0, 0, 0, 0.6);
+            pointer-events: none;
+        }
+
+        /* display area – brushed metal */
+        .display {
+            background: #b8b0a8;
+            /* metallic base */
+            padding: 1.2rem 1.5rem;
+            border-radius: 32px;
+            margin-bottom: 2rem;
+            box-shadow:
+                inset 0 8px 12px rgba(0, 0, 0, 0.5),
+                inset 0 -4px 6px rgba(255, 255, 240, 0.6),
+                0 4px 8px rgba(0, 0, 0, 0.4);
+            border: 1px solid #d6cec4;
+            position: relative;
+            /* brushed metal texture */
+            background-image:
+                repeating-linear-gradient(85deg,
+                    rgba(200, 190, 180, 0.3) 0px,
+                    rgba(220, 210, 200, 0.1) 2px,
+                    rgba(180, 170, 160, 0.2) 4px,
+                    rgba(240, 230, 220, 0.1) 6px,
+                    rgba(200, 190, 180, 0) 8px);
+            background-size: 200% 100%;
+            animation: shimmer 8s infinite linear;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        .display-screen {
+            background: #1e2b2c;
+            /* deep greenish‑black, old LCD */
+            padding: 0.8rem 1.2rem;
+            border-radius: 24px;
+            box-shadow:
+                inset 0 4px 12px rgba(0, 0, 0, 0.8),
+                0 2px 4px rgba(255, 235, 200, 0.3);
+            border: 1px solid #3d4a4a;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-end;
+            word-break: break-all;
+            background: #182122;
+            background-image: radial-gradient(circle at 30% 40%, #2a3a3a 1px, transparent 1px);
+            background-size: 12px 12px;
+        }
+
+        #expression {
+            font-size: 1rem;
+            color: #8fbc8f;
+            /* soft green */
+            opacity: 0.8;
+            min-height: 1.6rem;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 6px rgba(100, 200, 100, 0.3);
+            width: 100%;
+            text-align: right;
+        }
+
+        #result {
+            font-size: 2.6rem;
+            font-weight: 500;
+            color: #c7f0c7;
+            text-shadow: 0 0 10px rgba(150, 255, 150, 0.4);
+            line-height: 1.2;
+            width: 100%;
+            text-align: right;
+            transition: font-size 0.1s;
+            font-family: 'Inter', monospace;
+            letter-spacing: 1px;
+        }
+
+        /* button grid – leather & wood feel */
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-top: 8px;
+        }
+
+        /* skeuomorphic button – 3D bevel + material */
+        .btn {
+            background: #c9b6a2;
+            /* warm beige leather */
+            border: none;
+            border-radius: 28px;
+            padding: 1.2rem 0;
+            font-size: 1.8rem;
+            font-weight: 500;
+            color: #2d211a;
+            box-shadow:
+                0 8px 0 #6b5340,
+                0 10px 16px rgba(0, 0, 0, 0.4),
+                inset 0 -2px 4px rgba(0, 0, 0, 0.2),
+                inset 0 2px 8px rgba(255, 240, 210, 0.6);
+            transition: all 0.06s linear;
+            cursor: pointer;
+            text-shadow: 0 1px 0 rgba(255, 240, 200, 0.4);
+            border: 1px solid #dbcbbc;
+            position: relative;
+            background-image: radial-gradient(circle at 30% 25%, rgba(255, 235, 210, 0.3) 0%, transparent 60%);
+            font-family: 'Inter', sans-serif;
+            transform: translateY(-2px);
+        }
+
+        /* different materials for operator & function */
+        .btn-operator {
+            background: #b8a68b;
+            box-shadow:
+                0 8px 0 #5f4a36,
+                0 10px 16px rgba(0, 0, 0, 0.4),
+                inset 0 -2px 4px rgba(0, 0, 0, 0.3),
+                inset 0 2px 8px rgba(255, 220, 170, 0.5);
+            color: #1f1712;
+        }
+
+        .btn-function {
+            background: #a58d79;
+            box-shadow:
+                0 8px 0 #4d3b2c,
+                0 10px 16px rgba(0, 0, 0, 0.4),
+                inset 0 -2px 4px rgba(0, 0, 0, 0.3),
+                inset 0 2px 8px rgba(230, 200, 160, 0.5);
+            color: #1f1712;
+            font-size: 1.6rem;
+        }
+
+        .btn-equals {
+            background: #b88b5e;
+            /* warm brass / gold */
+            box-shadow:
+                0 8px 0 #785d3f,
+                0 10px 16px rgba(0, 0, 0, 0.5),
+                inset 0 -2px 4px rgba(0, 0, 0, 0.3),
+                inset 0 2px 12px rgba(255, 215, 130, 0.7);
+            color: #1f140e;
+            font-size: 2.2rem;
+            background-image: radial-gradient(circle at 40% 30%, #e6c394, #b88b5e 80%);
+        }
+
+        /* pressed state – realistic 3D depression */
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow:
+                0 2px 0 #4d3b2c,
+                0 6px 12px rgba(0, 0, 0, 0.4),
+                inset 0 -2px 4px rgba(0, 0, 0, 0.2),
+                inset 0 2px 8px rgba(255, 220, 170, 0.3);
+        }
+
+        .btn-equals:active {
+            transform: translateY(4px);
+            box-shadow:
+                0 2px 0 #5f4a36,
+                0 6px 12px rgba(0, 0, 0, 0.5),
+                inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* add a subtle wood grain on some buttons */
+        .btn::after {
+            content: '';
+            position: absolute;
+            inset: 6px;
+            border-radius: 20px;
+            background: repeating-linear-gradient(85deg,
+                    rgba(100, 70, 40, 0.04) 0px,
+                    rgba(100, 70, 40, 0) 4px,
+                    rgba(100, 70, 40, 0.03) 8px,
+                    rgba(100, 70, 40, 0) 12px);
+            pointer-events: none;
+        }
+
+        /* spacing & alignment */
+        .btn-zero {
+            grid-column: span 2;
+        }
+
+        /* small screen tweaks */
+        @media (max-width: 450px) {
+            .calculator {
+                padding: 1.5rem 1.2rem 1.8rem;
+            }
+
+            .btn {
+                font-size: 1.6rem;
+                padding: 1rem 0;
+            }
+
+            #result {
+                font-size: 2.2rem;
+            }
+        }
+
+        /* leather texture overlay (extra) */
+        .calculator:after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 56px 56px 48px 48px;
+            background: repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.02) 0px, rgba(0, 0, 0, 0.02) 3px, transparent 3px, transparent 8px);
+            pointer-events: none;
+        }
+
+        /* small decorative "stitching" */
+        .stitch {
+            position: absolute;
+            top: 18px;
+            left: 30px;
+            right: 30px;
+            height: 4px;
+            background: repeating-linear-gradient(90deg, #d8c4b0 0px, #d8c4b0 4px, transparent 4px, transparent 10px);
+            opacity: 0.2;
+            border-radius: 2px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="calculator" role="application" aria-label="Skeuomorphic calculator">
+        <div class="stitch"></div>
+        <!-- Display -->
+        <div class="display">
+            <div class="display-screen">
+                <div id="expression"></div>
+                <div id="result">0</div>
+            </div>
+        </div>
+
+        <!-- Buttons grid -->
+        <div class="buttons">
+            <button class="btn btn-function" data-value="clear">⌫</button>
+            <button class="btn btn-function" data-value="clearAll">C</button>
+            <button class="btn btn-operator" data-value="%">%</button>
+            <button class="btn btn-operator" data-value="/">÷</button>
+
+            <button class="btn" data-value="7">7</button>
+            <button class="btn" data-value="8">8</button>
+            <button class="btn" data-value="9">9</button>
+            <button class="btn btn-operator" data-value="*">×</button>
+
+            <button class="btn" data-value="4">4</button>
+            <button class="btn" data-value="5">5</button>
+            <button class="btn" data-value="6">6</button>
+            <button class="btn btn-operator" data-value="-">−</button>
+
+            <button class="btn" data-value="1">1</button>
+            <button class="btn" data-value="2">2</button>
+            <button class="btn" data-value="3">3</button>
+            <button class="btn btn-operator" data-value="+">+</button>
+
+            <button class="btn btn-zero" data-value="0">0</button>
+            <button class="btn" data-value=".">.</button>
+            <button class="btn btn-equals" data-value="=">=</button>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            "use strict";
+
+            // DOM refs
+            const resultEl = document.getElementById('result');
+            const expressionEl = document.getElementById('expression');
+
+            // state
+            let currentInput = '0';
+            let previousInput = '';
+            let operator = null;
+            let shouldResetDisplay = false;
+            let expressionString = '';
+
+            // helper: update display
+            function updateDisplay() {
+                // format number with commas? keep raw for now
+                let displayValue = currentInput;
+                if (displayValue.length > 14) {
+                    // avoid overflow
+                    displayValue = parseFloat(displayValue).toExponential(6);
+                }
+                resultEl.textContent = displayValue;
+                expressionEl.textContent = expressionString;
+            }
+
+            // clear all
+            function clearAll() {
+                currentInput = '0';
+                previousInput = '';
+                operator = null;
+                shouldResetDisplay = false;
+                expressionString = '';
+                updateDisplay();
+            }
+
+            // clear last entry (backspace)
+            function clearLast() {
+                if (shouldResetDisplay) return;
+                if (currentInput.length > 1) {
+                    currentInput = currentInput.slice(0, -1);
+                } else {
+                    currentInput = '0';
+                }
+                updateDisplay();
+            }
+
+            // input digit or decimal
+            function inputDigit(digit) {
+                if (digit === '.' && currentInput.includes('.')) return;
+                if (shouldResetDisplay) {
+                    currentInput = digit === '.' ? '0.' : digit;
+                    shouldResetDisplay = false;
+                } else {
+                    if (currentInput === '0' && digit !== '.') {
+                        currentInput = digit;
+                    } else {
+                        currentInput += digit;
+                    }
+                }
+                updateDisplay();
+            }
+
+            // handle operator
+            function handleOperator(op) {
+                const current = parseFloat(currentInput);
+                if (operator && !shouldResetDisplay) {
+                    // chain calculation
+                    const prev = parseFloat(previousInput);
+                    let result;
+                    switch (operator) {
+                        case '+': result = prev + current; break;
+                        case '-': result = prev - current; break;
+                        case '*': result = prev * current; break;
+                        case '/': result = prev / current; break;
+                        case '%': result = prev % current; break;
+                        default: result = current;
+                    }
+                    // avoid floating point noise
+                    if (!Number.isInteger(result)) {
+                        result = parseFloat(result.toPrecision(12));
+                    }
+                    currentInput = String(result);
+                    previousInput = String(result);
+                    expressionString = `${String(result)} ${op} `;
+                } else {
+                    previousInput = currentInput;
+                    expressionString = `${currentInput} ${op} `;
+                }
+                operator = op;
+                shouldResetDisplay = true;
+                updateDisplay();
+            }
+
+            // calculate result
+            function calculate() {
+                if (!operator) return;
+                const current = parseFloat(currentInput);
+                const prev = parseFloat(previousInput);
+                let result;
+                switch (operator) {
+                    case '+': result = prev + current; break;
+                    case '-': result = prev - current; break;
+                    case '*': result = prev * current; break;
+                    case '/':
+                        if (current === 0) {
+                            result = 'Error';
+                            expressionString = 'Error';
+                            currentInput = '0';
+                            previousInput = '';
+                            operator = null;
+                            shouldResetDisplay = true;
+                            resultEl.textContent = 'Error';
+                            expressionEl.textContent = 'Division by zero';
+                            return;
+                        }
+                        result = prev / current;
+                        break;
+                    case '%': result = prev % current; break;
+                    default: return;
+                }
+                if (!Number.isInteger(result)) {
+                    result = parseFloat(result.toPrecision(12));
+                }
+                const resultStr = String(result);
+                // build expression string for display
+                expressionString = `${previousInput} ${operator} ${currentInput} =`;
+                currentInput = resultStr;
+                previousInput = resultStr;
+                operator = null;
+                shouldResetDisplay = true;
+                updateDisplay();
+            }
+
+            // handle button clicks via data-value
+            function handleClick(value) {
+                switch (value) {
+                    case 'clearAll': clearAll(); break;
+                    case 'clear': clearLast(); break;
+                    case '=': calculate(); break;
+                    case '+': case '-': case '*': case '/': case '%':
+                        handleOperator(value);
+                        break;
+                    default:
+                        // digit or decimal
+                        inputDigit(value);
+                        break;
+                }
+            }
+
+            // event binding
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', function (e) {
+                    const val = this.getAttribute('data-value');
+                    if (val) handleClick(val);
+                });
+                // optional: add subtle haptic (no-op)
+            });
+
+            // keyboard support
+            document.addEventListener('keydown', function (e) {
+                const key = e.key;
+                if (key >= '0' && key <= '9') {
+                    e.preventDefault();
+                    handleClick(key);
+                } else if (key === '.') {
+                    e.preventDefault();
+                    handleClick('.');
+                } else if (key === 'Enter' || key === '=') {
+                    e.preventDefault();
+                    handleClick('=');
+                } else if (key === 'Backspace') {
+                    e.preventDefault();
+                    handleClick('clear');
+                } else if (key === 'Escape' || key === 'c' || key === 'C') {
+                    e.preventDefault();
+                    handleClick('clearAll');
+                } else if (key === '+') { e.preventDefault(); handleClick('+'); }
+                else if (key === '-') { e.preventDefault(); handleClick('-'); }
+                else if (key === '*') { e.preventDefault(); handleClick('*'); }
+                else if (key === '/') { e.preventDefault(); handleClick('/'); }
+                else if (key === '%') { e.preventDefault(); handleClick('%'); }
+            });
+
+            // initial display
+            clearAll();
+        })();
+    </script>
+</body>
+
+</html>

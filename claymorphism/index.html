@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claymorphism UI</title>
+    <!-- Font Awesome Icons (optional but adds to the aesthetic) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f4ede8;
+            /* warm clay background */
+            padding: 1.5rem;
+        }
+
+        /* main clay card – the "canvas" */
+        .clay-card {
+            max-width: 800px;
+            width: 100%;
+            background: #faf3ed;
+            border-radius: 5rem 5rem 4rem 4rem;
+            padding: 3rem 2.5rem;
+            box-shadow:
+                0 20px 30px -8px rgba(0, 0, 0, 0.15),
+                0 8px 12px -4px rgba(0, 0, 0, 0.05),
+                inset 0 -6px 0 rgba(0, 0, 0, 0.03),
+                inset 0 8px 12px rgba(255, 255, 255, 0.7);
+            transition: box-shadow 0.2s ease;
+        }
+
+        /* clay heading */
+        .clay-title {
+            font-size: 2.8rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            color: #4d3e35;
+            text-shadow: 0 4px 6px rgba(255, 215, 190, 0.4);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .clay-title i {
+            color: #b48b7a;
+            font-size: 2.4rem;
+            filter: drop-shadow(0 6px 4px rgba(0, 0, 0, 0.05));
+        }
+
+        .clay-sub {
+            font-size: 1.1rem;
+            color: #7f6b5d;
+            margin-bottom: 2.5rem;
+            padding-left: 0.2rem;
+            font-weight: 400;
+            letter-spacing: 0.2px;
+            border-left: 4px solid #dcc2b2;
+            padding-left: 1rem;
+        }
+
+        /* grid for clay components */
+        .clay-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem 2.5rem;
+            justify-content: center;
+            margin-top: 1.8rem;
+        }
+
+        /* ----- CLAY ELEMENTS (core) ----- */
+        .clay-element {
+            background: #faf3ed;
+            border-radius: 2.8rem;
+            padding: 1.6rem 2rem;
+            min-width: 140px;
+            flex: 1 0 auto;
+            box-shadow:
+                0 12px 18px -6px rgba(0, 0, 0, 0.12),
+                0 4px 8px -2px rgba(0, 0, 0, 0.02),
+                inset 0 -4px 0 rgba(0, 0, 0, 0.03),
+                inset 0 6px 10px rgba(255, 245, 235, 0.8);
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-align: center;
+            backdrop-filter: blur(2px);
+            border: 1px solid rgba(255, 235, 220, 0.3);
+        }
+
+        /* pressed / active state (clay "squish") */
+        .clay-element:active {
+            transform: scale(0.96);
+            box-shadow:
+                0 6px 10px -4px rgba(0, 0, 0, 0.08),
+                inset 0 4px 8px rgba(0, 0, 0, 0.04),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.02);
+        }
+
+        /* specific styles for buttons */
+        .clay-btn {
+            background: #faf3ed;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #4d3e35;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            padding: 1.2rem 2rem;
+            border-radius: 4rem;
+            min-width: 160px;
+            box-shadow:
+                0 12px 18px -6px rgba(0, 0, 0, 0.12),
+                0 4px 8px -2px rgba(0, 0, 0, 0.02),
+                inset 0 -5px 0 rgba(0, 0, 0, 0.04),
+                inset 0 6px 12px rgba(255, 245, 235, 0.9);
+            transition: all 0.15s ease;
+            border: 1px solid rgba(255, 235, 220, 0.25);
+        }
+
+        .clay-btn i {
+            font-size: 1.2rem;
+            color: #b48b7a;
+        }
+
+        .clay-btn:hover {
+            transform: translateY(-4px);
+            box-shadow:
+                0 20px 28px -10px rgba(0, 0, 0, 0.15),
+                0 6px 12px -4px rgba(0, 0, 0, 0.02),
+                inset 0 -4px 0 rgba(0, 0, 0, 0.02),
+                inset 0 8px 14px rgba(255, 245, 235, 0.9);
+        }
+
+        .clay-btn:active {
+            transform: scale(0.94) translateY(0px);
+            box-shadow:
+                0 6px 12px -4px rgba(0, 0, 0, 0.08),
+                inset 0 4px 10px rgba(0, 0, 0, 0.06);
+        }
+
+        /* clay slider (range) */
+        .clay-slider-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.6rem;
+            width: 100%;
+            max-width: 260px;
+            margin: 0 auto;
+        }
+
+        .clay-slider-label {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #5f4d3f;
+            letter-spacing: 0.3px;
+            padding: 0 6px;
+        }
+
+        /* custom clay range input */
+        input[type="range"].clay-range {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 16px;
+            background: #efe4db;
+            border-radius: 40px;
+            outline: none;
+            box-shadow:
+                inset 0 6px 8px rgba(0, 0, 0, 0.04),
+                inset 0 -2px 4px rgba(255, 235, 220, 0.8),
+                0 4px 6px rgba(0, 0, 0, 0.02);
+            transition: background 0.15s;
+        }
+
+        /* thumb */
+        input[type="range"].clay-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 28px;
+            height: 28px;
+            background: #faf3ed;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow:
+                0 8px 14px -4px rgba(0, 0, 0, 0.18),
+                0 2px 6px rgba(0, 0, 0, 0.02),
+                inset 0 -4px 0 rgba(0, 0, 0, 0.02),
+                inset 0 6px 12px rgba(255, 245, 235, 0.9);
+            border: 1px solid rgba(255, 235, 220, 0.3);
+            transition: 0.1s;
+        }
+
+        input[type="range"].clay-range::-webkit-slider-thumb:hover {
+            transform: scale(1.08);
+            box-shadow:
+                0 12px 18px -6px rgba(0, 0, 0, 0.15),
+                inset 0 -3px 0 rgba(0, 0, 0, 0.02),
+                inset 0 8px 14px rgba(255, 245, 235, 0.9);
+        }
+
+        input[type="range"].clay-range::-moz-range-thumb {
+            width: 28px;
+            height: 28px;
+            background: #faf3ed;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 1px solid rgba(255, 235, 220, 0.3);
+            box-shadow:
+                0 8px 14px -4px rgba(0, 0, 0, 0.18),
+                inset 0 -4px 0 rgba(0, 0, 0, 0.02),
+                inset 0 6px 12px rgba(255, 245, 235, 0.9);
+        }
+
+        /* clay badge / counter */
+        .clay-badge {
+            background: #faf3ed;
+            border-radius: 6rem;
+            padding: 0.9rem 2rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            box-shadow:
+                0 8px 14px -4px rgba(0, 0, 0, 0.08),
+                inset 0 -4px 0 rgba(0, 0, 0, 0.02),
+                inset 0 6px 12px rgba(255, 245, 235, 0.8);
+            border: 1px solid rgba(255, 235, 220, 0.2);
+            font-weight: 500;
+            color: #4d3e35;
+            font-size: 1.2rem;
+        }
+
+        .clay-badge i {
+            color: #b48b7a;
+            font-size: 1.3rem;
+        }
+
+        .clay-badge span {
+            font-weight: 600;
+            font-size: 1.5rem;
+            min-width: 2.2rem;
+            text-align: center;
+            color: #3f3229;
+        }
+
+        /* layout helpers */
+        .flex-center {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 1.8rem;
+        }
+
+        .mt-2 {
+            margin-top: 0.8rem;
+        }
+
+        .clay-divider {
+            width: 100%;
+            height: 2px;
+            background: radial-gradient(circle, #dcc2b2 10%, transparent 80%);
+            margin: 2rem 0 1rem;
+            opacity: 0.4;
+        }
+
+        /* responsive */
+        @media (max-width: 550px) {
+            .clay-card {
+                padding: 2rem 1.2rem;
+                border-radius: 3rem;
+            }
+
+            .clay-title {
+                font-size: 2.2rem;
+            }
+
+            .clay-grid {
+                gap: 1.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="clay-card">
+        <!-- header -->
+        <div class="clay-title">
+            <i class="fas fa-paint-brush"></i>
+            Claymorphism
+        </div>
+        <div class="clay-sub">
+            <i class="fas fa-hand-peace" style="margin-right: 8px;"></i>
+            soft · extruded · playful
+        </div>
+
+        <!-- clay components grid -->
+        <div class="clay-grid">
+            <!-- BUTTON 1 -->
+            <button class="clay-btn" id="clayActionBtn">
+                <i class="fas fa-thumbs-up"></i> Like
+            </button>
+
+            <!-- BUTTON 2 (with counter) -->
+            <button class="clay-btn" id="clayCounterBtn">
+                <i class="fas fa-heart" style="color: #d48a7a;"></i>
+                <span id="clayCountDisplay">0</span>
+            </button>
+
+            <!-- SLIDER (range) -->
+            <div class="clay-element" style="flex: 1 1 200px; min-width: 180px; padding: 1.2rem 1.5rem;">
+                <div class="clay-slider-container">
+                    <div class="clay-slider-label">
+                        <span><i class="fas fa-volume-low"></i></span>
+                        <span id="sliderValue">50</span>
+                        <span><i class="fas fa-volume-high"></i></span>
+                    </div>
+                    <input type="range" class="clay-range" id="claySlider" min="0" max="100" value="50">
+                </div>
+            </div>
+
+            <!-- BADGE (static) -->
+            <div class="clay-badge">
+                <i class="fas fa-star"></i>
+                <span>4.8</span>
+                <span style="font-weight: 400; font-size: 0.9rem; color: #7f6b5d;">★</span>
+            </div>
+        </div>
+
+        <!-- extra row with a "reset" or info element (just for demo) -->
+        <div class="clay-divider"></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div style="display: flex; align-items: center; gap: 0.8rem;">
+                <i class="fas fa-arrow-pointer" style="color: #b48b7a; font-size: 1.4rem;"></i>
+                <span style="color: #5f4d3f; font-weight: 400;">click the heart · slide the bar</span>
+            </div>
+            <div class="clay-element"
+                style="padding: 0.6rem 1.4rem; border-radius: 4rem; min-width: auto; background: #f7eee8;">
+                <i class="fas fa-rotate-right" style="margin-right: 8px; color: #b48b7a;"></i>
+                <span id="clayStatus" style="font-size: 0.95rem; color: #5f4d3f;">ready</span>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        (function () {
+            "use strict";
+
+            // ----- DOM refs -----
+            const likeBtn = document.getElementById('clayActionBtn');
+            const counterBtn = document.getElementById('clayCounterBtn');
+            const countDisplay = document.getElementById('clayCountDisplay');
+            const slider = document.getElementById('claySlider');
+            const sliderValueLabel = document.getElementById('sliderValue');
+            const statusEl = document.getElementById('clayStatus');
+
+            // ----- state -----
+            let likeCount = 0;
+
+            // ----- helper: update status with a message (auto-clears) -----
+            function setStatus(msg, isPermanent = false) {
+                statusEl.textContent = msg;
+                if (!isPermanent) {
+                    // reset after 2s, but only if the message hasn't been changed manually
+                    const currentMsg = msg;
+                    setTimeout(() => {
+                        if (statusEl.textContent === currentMsg) {
+                            statusEl.textContent = 'ready';
+                        }
+                    }, 2000);
+                }
+            }
+
+            // ----- Like button (clay action) -----
+            likeBtn.addEventListener('click', function (e) {
+                // haptic feedback: clay squish already in CSS, but we add a tiny extra
+                setStatus('👍 liked!');
+                // subtle animation via class (optional)
+                this.style.transition = 'transform 0.1s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                this.style.transform = 'scale(0.92)';
+                setTimeout(() => { this.style.transform = ''; }, 150);
+            });
+
+            // ----- Counter button (heart) -----
+            counterBtn.addEventListener('click', function (e) {
+                likeCount += 1;
+                countDisplay.textContent = likeCount;
+                // clay squish + extra feedback
+                setStatus(`❤️ ${likeCount}`);
+                // mini "pop" on the count
+                countDisplay.style.transition = 'transform 0.1s ease';
+                countDisplay.style.transform = 'scale(1.5)';
+                setTimeout(() => { countDisplay.style.transform = ''; }, 150);
+                // also animate button
+                this.style.transform = 'scale(0.94)';
+                setTimeout(() => { this.style.transform = ''; }, 150);
+            });
+
+            // ----- Slider (range) with clay feedback -----
+            slider.addEventListener('input', function (e) {
+                const val = this.value;
+                sliderValueLabel.textContent = val;
+                // update status with current value, but not permanent
+                setStatus(`🔊 ${val}%`);
+                // optional: change thumb or background (just for fun)
+                // we can also add a subtle background tint to the slider track (via style)
+                const percent = (val / 100) * 100;
+                // dynamic background on the track: we use a linear gradient
+                this.style.background = `linear-gradient(to right, #dcc2b2 0%, #dcc2b2 ${percent}%, #efe4db ${percent}%, #efe4db 100%)`;
+            });
+
+            // initialize slider background
+            (function initSlider() {
+                const val = slider.value;
+                sliderValueLabel.textContent = val;
+                const percent = (val / 100) * 100;
+                slider.style.background = `linear-gradient(to right, #dcc2b2 0%, #dcc2b2 ${percent}%, #efe4db ${percent}%, #efe4db 100%)`;
+            })();
+
+            // ----- extra: reset status on any clay element click (optional) -----
+            // but we keep it as is.
+
+            // ----- bonus: click on badge just for fun (no action, just claymorphism) -----
+            const badge = document.querySelector('.clay-badge');
+            if (badge) {
+                badge.addEventListener('click', function () {
+                    setStatus('⭐ star power');
+                    this.style.transition = 'transform 0.12s';
+                    this.style.transform = 'scale(0.94)';
+                    setTimeout(() => { this.style.transform = ''; }, 150);
+                });
+            }
+
+            // ----- global "clay" interactive: any .clay-element or .clay-btn already has :active -----
+            // but we also add a tiny extra to the .clay-element divs (slider container, badge, etc.)
+            document.querySelectorAll('.clay-element, .clay-badge, .clay-btn').forEach(el => {
+                el.addEventListener('mousedown', function (e) {
+                    // just to enhance the clay feel, but we don't want to interfere with slider
+                    if (this.tagName === 'INPUT') return;
+                    // add a tiny "press" class for extra effect (but we already use :active)
+                });
+            });
+
+            // ----- "ready" status after any interaction (optional) -----
+            // we already have setStatus with auto-reset.
+
+            console.log('🧱 Claymorphism UI ready');
+        })();
+    </script>
+</body>
+
+</html>
