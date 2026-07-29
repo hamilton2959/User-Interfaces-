@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus · realtime dashboard</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- SockJS & STOMP for realtime -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/dist/stomp.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        body {
+            background: #f4f6fa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .top-bar {
+            background: #fff;
+            padding: 0 24px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        .top-bar .menu-btn {
+            background: transparent;
+            border: none;
+            font-size: 26px;
+            color: #1e293b;
+            cursor: pointer;
+            padding: 8px 10px 8px 4px;
+            border-radius: 12px;
+            transition: background 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .top-bar .menu-btn:hover {
+            background: #f1f5f9;
+        }
+
+        .top-bar .brand {
+            margin-left: 12px;
+            font-weight: 600;
+            font-size: 20px;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .top-bar .brand i {
+            color: #3b82f6;
+            font-size: 24px;
+        }
+
+        .top-bar .spacer {
+            flex: 1;
+        }
+
+        .top-bar .avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 600;
+            font-size: 18px;
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
+        }
+
+        .main-content.shifted {
+            transform: translateX(280px);
+        }
+
+        .main-content h1 {
+            font-size: 32px;
+            font-weight: 600;
+            color: #0f172a;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+
+        .main-content .sub {
+            font-size: 17px;
+            color: #475569;
+            margin-bottom: 24px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: #fff;
+            padding: 28px 20px;
+            border-radius: 24px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(0, 0, 0, 0.02);
+            transition: 0.15s ease;
+            cursor: default;
+        }
+
+        .card i {
+            font-size: 32px;
+            color: #3b82f6;
+            margin-bottom: 14px;
+        }
+
+        .card h3 {
+            font-weight: 600;
+            font-size: 18px;
+            color: #0f172a;
+        }
+
+        .card p {
+            font-size: 15px;
+            color: #64748b;
+            margin-top: 6px;
+        }
+
+        .card .badge {
+            display: inline-block;
+            background: #eef2ff;
+            color: #2563eb;
+            padding: 2px 12px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        .detail-panel {
+            margin-top: 40px;
+            background: #fff;
+            border-radius: 24px;
+            padding: 24px 28px;
+            border: 1px solid rgba(0, 0, 0, 0.02);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.02);
+        }
+
+        .detail-panel h3 {
+            font-weight: 600;
+            font-size: 20px;
+            color: #0f172a;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .detail-panel h3 i {
+            color: #3b82f6;
+        }
+
+        .detail-panel .detail-list {
+            list-style: none;
+        }
+
+        .detail-panel .detail-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            color: #1e293b;
+            font-size: 15px;
+        }
+
+        .detail-panel .detail-list li:last-child {
+            border-bottom: none;
+        }
+
+        .detail-panel .detail-list .meta {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .detail-panel .empty {
+            color: #94a3b8;
+            padding: 16px 0;
+        }
+
+        .add-detail-area {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .add-detail-area input {
+            flex: 1;
+            min-width: 180px;
+            padding: 10px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 40px;
+            font-size: 15px;
+            outline: none;
+            transition: 0.15s;
+        }
+
+        .add-detail-area input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .add-detail-area button {
+            background: #3b82f6;
+            border: none;
+            color: #fff;
+            font-weight: 500;
+            padding: 10px 28px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.15s;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-detail-area button:hover {
+            background: #2563eb;
+        }
+
+        .add-detail-area button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: #dcfce7;
+            color: #15803d;
+            padding: 2px 12px;
+            border-radius: 40px;
+            font-size: 13px;
+        }
+
+        .drawer-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(4px);
+            z-index: 30;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0s 0.3s;
+        }
+
+        .drawer-overlay.open {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.3s ease, visibility 0s 0s;
+        }
+
+        .nav-drawer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 300px;
+            max-width: 80vw;
+            height: 100%;
+            background: #fff;
+            box-shadow: 8px 0 40px rgba(0, 0, 0, 0.06);
+            z-index: 40;
+            transform: translateX(-100%);
+            transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(0, 0, 0, 0.02);
+        }
+
+        .nav-drawer.open {
+            transform: translateX(0);
+        }
+
+        .drawer-header {
+            padding: 28px 24px 18px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .drawer-header .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .drawer-header .user-avatar {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6, #a855f7);
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 600;
+            font-size: 22px;
+            box-shadow: 0 6px 14px rgba(59, 130, 246, 0.25);
+        }
+
+        .drawer-header .user-info h4 {
+            font-weight: 600;
+            font-size: 18px;
+            color: #0f172a;
+        }
+
+        .drawer-header .user-info p {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .drawer-header .close-btn {
+            background: #f1f5f9;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 40px;
+            font-size: 18px;
+            color: #1e293b;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drawer-header .close-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .drawer-nav {
+            flex: 1;
+            padding: 20px 16px 30px;
+            overflow-y: auto;
+        }
+
+        .drawer-nav .nav-label {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+            padding: 8px 12px 10px;
+        }
+
+        .drawer-nav ul {
+            list-style: none;
+            margin-bottom: 28px;
+        }
+
+        .drawer-nav ul li {
+            margin-bottom: 4px;
+        }
+
+        .drawer-nav ul li a {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            color: #1e293b;
+            font-weight: 500;
+            font-size: 16px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+
+        .drawer-nav ul li a i {
+            width: 24px;
+            font-size: 20px;
+            color: #64748b;
+            transition: color 0.1s;
+        }
+
+        .drawer-nav ul li a:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .drawer-nav ul li a:hover i {
+            color: #3b82f6;
+        }
+
+        .drawer-nav ul li a.active {
+            background: #eff6ff;
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .drawer-nav ul li a.active i {
+            color: #2563eb;
+        }
+
+        .drawer-footer {
+            border-top: 1px solid #f1f5f9;
+            padding: 16px 16px 28px;
+        }
+
+        .drawer-footer a {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            color: #1e293b;
+            font-weight: 500;
+            font-size: 16px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+
+        .drawer-footer a i {
+            width: 24px;
+            font-size: 20px;
+            color: #64748b;
+        }
+
+        .drawer-footer a:hover {
+            background: #f1f5f9;
+        }
+
+        @media (max-width:640px) {
+            .main-content.shifted {
+                transform: translateX(0);
+            }
+
+            .top-bar .brand span {
+                display: none;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .detail-panel {
+                padding: 16px;
+            }
+        }
+
+        .realtime-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #22c55e;
+            border-radius: 10px;
+            margin-right: 8px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.6;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="top-bar">
+            <button class="menu-btn" id="menuToggle" aria-label="Open drawer"><i class="fas fa-bars"></i></button>
+            <div class="brand"><i class="fas fa-cube"></i><span>Nexus</span> <span class="realtime-dot"></span></div>
+            <div class="spacer"></div>
+            <div class="avatar">JD</div>
+        </header>
+
+        <main class="main-content" id="mainContent">
+            <h1>Dashboard <span style="font-size:16px; font-weight:400; color:#64748b; margin-left:12px;"><i
+                        class="fas fa-circle" style="color:#22c55e; font-size:12px;"></i> live</span></h1>
+            <div class="sub">Welcome back, Jane. Real‑time updates from your workspace.</div>
+
+            <div class="card-grid" id="statsGrid">
+                <div class="card"><i class="fas fa-chart-pie"></i>
+                    <h3>Analytics</h3>
+                    <p id="statAnalytics">+24% this week</p>
+                </div>
+                <div class="card"><i class="fas fa-users"></i>
+                    <h3>Team</h3>
+                    <p id="statTeam">12 active</p>
+                </div>
+                <div class="card"><i class="fas fa-folder-open"></i>
+                    <h3>Projects</h3>
+                    <p id="statProjects">8 in progress</p>
+                </div>
+            </div>
+
+            <!-- Detail panel with realtime additions -->
+            <div class="detail-panel" id="detailPanel">
+                <h3><i class="fas fa-list-ul"></i> Activity details <span
+                        style="font-size:14px; font-weight:400; color:#64748b; margin-left:8px;"
+                        id="detailCount">(0)</span></h3>
+                <ul class="detail-list" id="detailList">
+                    <li class="empty">No details yet — add one below.</li>
+                </ul>
+                <div class="add-detail-area">
+                    <input type="text" id="detailInput" placeholder="Add a detail note…" />
+                    <button id="addDetailBtn"><i class="fas fa-plus"></i> Add</button>
+                </div>
+                <div style="margin-top:12px; font-size:14px; color:#94a3b8;">
+                    <i class="fas fa-sync-alt fa-fw"></i> Realtime updates via WebSocket
+                </div>
+            </div>
+        </main>
+
+        <div class="drawer-overlay" id="drawerOverlay"></div>
+        <nav class="nav-drawer" id="navDrawer">
+            <div class="drawer-header">
+                <div class="user-profile">
+                    <div class="user-avatar">JD</div>
+                    <div class="user-info">
+                        <h4>Jane Doe</h4>
+                        <p>jane@nexus.com</p>
+                    </div>
+                </div>
+                <button class="close-btn" id="closeDrawer"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="drawer-nav">
+                <div class="nav-label">Main</div>
+                <ul>
+                    <li><a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="#"><i class="fas fa-chart-line"></i> Insights</a></li>
+                    <li><a href="#"><i class="fas fa-calendar-alt"></i> Schedule</a></li>
+                    <li><a href="#"><i class="fas fa-envelope"></i> Messages <span
+                                style="margin-left:auto; background:#3b82f6; color:#fff; font-size:12px; padding:2px 10px; border-radius:40px;">3</span></a>
+                    </li>
+                </ul>
+                <div class="nav-label">Workspace</div>
+                <ul>
+                    <li><a href="#"><i class="fas fa-folder"></i> Projects</a></li>
+                    <li><a href="#"><i class="fas fa-tasks"></i> Tasks</a></li>
+                    <li><a href="#"><i class="fas fa-users-cog"></i> Team</a></li>
+                </ul>
+            </div>
+            <div class="drawer-footer">
+                <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </nav>
+    </div>
+
+    <script>
+        (function () {
+            "use strict";
+
+            // ---- DOM refs ----
+            const menuToggle = document.getElementById('menuToggle');
+            const closeDrawerBtn = document.getElementById('closeDrawer');
+            const drawerOverlay = document.getElementById('drawerOverlay');
+            const navDrawer = document.getElementById('navDrawer');
+            const mainContent = document.getElementById('mainContent');
+            const detailList = document.getElementById('detailList');
+            const detailInput = document.getElementById('detailInput');
+            const addBtn = document.getElementById('addDetailBtn');
+            const detailCount = document.getElementById('detailCount');
+            const statAnalytics = document.getElementById('statAnalytics');
+            const statTeam = document.getElementById('statTeam');
+            const statProjects = document.getElementById('statProjects');
+
+            // ---- drawer logic ----
+            function openDrawer() { navDrawer.classList.add('open'); drawerOverlay.classList.add('open'); mainContent.classList.add('shifted'); menuToggle.setAttribute('aria-expanded', 'true'); document.body.style.overflow = 'hidden'; }
+            function closeDrawer() { navDrawer.classList.remove('open'); drawerOverlay.classList.remove('open'); mainContent.classList.remove('shifted'); menuToggle.setAttribute('aria-expanded', 'false'); document.body.style.overflow = ''; }
+            function toggleDrawer() { navDrawer.classList.contains('open') ? closeDrawer() : openDrawer(); }
+            menuToggle.addEventListener('click', toggleDrawer);
+            closeDrawerBtn.addEventListener('click', closeDrawer);
+            drawerOverlay.addEventListener('click', closeDrawer);
+            document.addEventListener('keydown', e => { if (e.key === 'Escape' && navDrawer.classList.contains('open')) closeDrawer(); });
+            document.querySelectorAll('.drawer-nav a, .drawer-footer a').forEach(link => {
+                link.addEventListener('click', function (e) { e.preventDefault(); if (navDrawer.classList.contains('open')) closeDrawer(); });
+            });
+
+            // ---- WebSocket / STOMP ----
+            let stompClient = null;
+            let details = []; // local cache
+
+            function connectWebSocket() {
+                const socket = new SockJS('/ws');
+                stompClient = Stomp.over(socket);
+                stompClient.connect({}, function (frame) {
+                    console.log('Connected: ' + frame);
+                    // Subscribe to topic for detail updates
+                    stompClient.subscribe('/topic/details', function (message) {
+                        const payload = JSON.parse(message.body);
+                        if (payload.type === 'INIT' || payload.type === 'SYNC') {
+                            details = payload.data || [];
+                            renderDetails();
+                        } else if (payload.type === 'ADD') {
+                            if (payload.data) {
+                                details.push(payload.data);
+                                renderDetails();
+                            }
+                        } else if (payload.type === 'STATS') {
+                            updateStats(payload.data);
+                        }
+                    });
+                    // request initial state
+                    stompClient.send('/app/details/init', {}, JSON.stringify({}));
+                }, function (error) {
+                    console.warn('STOMP error, retry in 3s', error);
+                    setTimeout(connectWebSocket, 3000);
+                });
+            }
+
+            // ---- Render details ----
+            function renderDetails() {
+                detailList.innerHTML = '';
+                if (!details || details.length === 0) {
+                    detailList.innerHTML = '<li class="empty">No details yet — add one below.</li>';
+                    detailCount.textContent = '(0)';
+                    return;
+                }
+                details.forEach((item, idx) => {
+                    const li = document.createElement('li');
+                    const text = item.text || item || 'Untitled';
+                    const time = item.timestamp ? new Date(item.timestamp).toLocaleTimeString() : new Date().toLocaleTimeString();
+                    li.innerHTML = `<span>${text}</span><span class="meta"><i class="far fa-clock"></i> ${time}</span>`;
+                    detailList.appendChild(li);
+                });
+                detailCount.textContent = `(${details.length})`;
+            }
+
+            // ---- Update stats from server ----
+            function updateStats(data) {
+                if (data.analytics) statAnalytics.textContent = data.analytics;
+                if (data.team) statTeam.textContent = data.team;
+                if (data.projects) statProjects.textContent = data.projects;
+            }
+
+            // ---- Send "add detail" via WebSocket ----
+            function sendDetail(text) {
+                if (!stompClient || !stompClient.connected) {
+                    alert('Not connected to server. Please refresh.');
+                    return;
+                }
+                stompClient.send('/app/details/add', {}, JSON.stringify({ text: text }));
+            }
+
+            // ---- UI: add button ----
+            addBtn.addEventListener('click', function () {
+                const val = detailInput.value.trim();
+                if (!val) return;
+                sendDetail(val);
+                detailInput.value = '';
+            });
+            detailInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') { e.preventDefault(); addBtn.click(); }
+            });
+
+            // ---- Connect ----
+            connectWebSocket();
+
+            // ---- Optional: update stats periodically via REST (fallback) ----
+            // but we rely on WebSocket for realtime
+
+            // ---- Expose for debugging ----
+            window.__nexus = { stompClient, details, renderDetails, sendDetail };
+        })();
+    </script>
+</body>
+
+</html>

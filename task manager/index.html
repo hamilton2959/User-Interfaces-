@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus · Dashboard</title>
+    <!-- Font Awesome 6 (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: #f4f6fa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.2s;
+        }
+
+        /* ----- main layout ----- */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* ----- top bar (header) ----- */
+        .top-bar {
+            background: #ffffff;
+            padding: 0 24px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        .top-bar .menu-btn {
+            background: transparent;
+            border: none;
+            font-size: 26px;
+            color: #1e293b;
+            cursor: pointer;
+            padding: 8px 10px 8px 4px;
+            border-radius: 12px;
+            transition: background 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .top-bar .menu-btn:hover {
+            background: #f1f5f9;
+        }
+
+        .top-bar .brand {
+            margin-left: 12px;
+            font-weight: 600;
+            font-size: 20px;
+            letter-spacing: -0.3px;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .top-bar .brand i {
+            color: #3b82f6;
+            font-size: 24px;
+        }
+
+        .top-bar .spacer {
+            flex: 1;
+        }
+
+        .top-bar .avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 18px;
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);
+            cursor: default;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            margin-left: 8px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ----- main content (pushes right when drawer opens) ----- */
+        .main-content {
+            flex: 1;
+            padding: 40px 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
+            will-change: transform;
+        }
+
+        .main-content.shifted {
+            transform: translateX(280px);
+        }
+
+        .main-content h1 {
+            font-size: 32px;
+            font-weight: 600;
+            color: #0f172a;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+
+        .main-content .subtitle {
+            font-size: 17px;
+            color: #475569;
+            line-height: 1.6;
+            max-width: 600px;
+            margin-bottom: 8px;
+        }
+
+        .main-content .last-updated {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 24px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            margin-top: 8px;
+        }
+
+        .card {
+            background: white;
+            padding: 28px 20px;
+            border-radius: 24px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(0, 0, 0, 0.02);
+            transition: 0.15s ease;
+            cursor: default;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .card i {
+            font-size: 32px;
+            color: #3b82f6;
+            margin-bottom: 14px;
+        }
+
+        .card h3 {
+            font-weight: 600;
+            font-size: 18px;
+            color: #0f172a;
+        }
+
+        .card .card-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 6px 0 4px;
+        }
+
+        .card p {
+            font-size: 15px;
+            color: #64748b;
+            margin-top: 6px;
+        }
+
+        .card .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        .status-badge.in-progress {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .status-badge.completed {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .status-badge.planning {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        /* ----- overlay (background) ----- */
+        .drawer-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 30;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0s 0.3s;
+        }
+
+        .drawer-overlay.open {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.3s ease, visibility 0s 0s;
+        }
+
+        /* ----- navigation drawer (the star) ----- */
+        .nav-drawer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 300px;
+            max-width: 80vw;
+            height: 100%;
+            background: #ffffff;
+            box-shadow: 8px 0 40px rgba(0, 0, 0, 0.06);
+            z-index: 40;
+            transform: translateX(-100%);
+            transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(0, 0, 0, 0.02);
+            will-change: transform;
+        }
+
+        .nav-drawer.open {
+            transform: translateX(0);
+        }
+
+        /* drawer header */
+        .drawer-header {
+            padding: 28px 24px 18px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .drawer-header .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .drawer-header .user-avatar {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6, #a855f7);
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 22px;
+            box-shadow: 0 6px 14px rgba(59, 130, 246, 0.25);
+        }
+
+        .drawer-header .user-info h4 {
+            font-weight: 600;
+            font-size: 18px;
+            color: #0f172a;
+        }
+
+        .drawer-header .user-info p {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .drawer-header .close-btn {
+            background: #f1f5f9;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 40px;
+            font-size: 18px;
+            color: #1e293b;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.15s;
+        }
+
+        .drawer-header .close-btn:hover {
+            background: #e2e8f0;
+        }
+
+        /* drawer navigation list */
+        .drawer-nav {
+            flex: 1;
+            padding: 20px 16px 30px;
+            overflow-y: auto;
+        }
+
+        .drawer-nav .nav-label {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+            padding: 8px 12px 10px;
+        }
+
+        .drawer-nav ul {
+            list-style: none;
+            margin-bottom: 28px;
+        }
+
+        .drawer-nav ul li {
+            margin-bottom: 4px;
+        }
+
+        .drawer-nav ul li a {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            color: #1e293b;
+            font-weight: 500;
+            font-size: 16px;
+            text-decoration: none;
+            transition: background 0.15s, color 0.1s;
+            cursor: pointer;
+        }
+
+        .drawer-nav ul li a i {
+            width: 24px;
+            font-size: 20px;
+            color: #64748b;
+            transition: color 0.1s;
+        }
+
+        .drawer-nav ul li a:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .drawer-nav ul li a:hover i {
+            color: #3b82f6;
+        }
+
+        .drawer-nav ul li a.active {
+            background: #eff6ff;
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .drawer-nav ul li a.active i {
+            color: #2563eb;
+        }
+
+        .drawer-nav ul li a .badge {
+            margin-left: auto;
+            background: #3b82f6;
+            color: white;
+            font-size: 12px;
+            padding: 2px 10px;
+            border-radius: 40px;
+            font-weight: 600;
+        }
+
+        .drawer-footer {
+            border-top: 1px solid #f1f5f9;
+            padding: 16px 16px 28px;
+        }
+
+        .drawer-footer a {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            color: #1e293b;
+            font-weight: 500;
+            font-size: 16px;
+            text-decoration: none;
+            transition: background 0.15s;
+            cursor: pointer;
+        }
+
+        .drawer-footer a i {
+            width: 24px;
+            font-size: 20px;
+            color: #64748b;
+        }
+
+        .drawer-footer a:hover {
+            background: #f1f5f9;
+        }
+
+        /* Error message */
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .error-message i {
+            font-size: 20px;
+        }
+
+        /* responsive */
+        @media (max-width: 640px) {
+            .main-content.shifted {
+                transform: translateX(0);
+            }
+
+            .top-bar .brand span {
+                display: none;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+
+        <!-- Top bar -->
+        <header class="top-bar">
+            <button class="menu-btn" id="menuToggle" aria-label="Open navigation drawer">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="brand">
+                <i class="fas fa-cube"></i>
+                <span>Nexus</span>
+            </div>
+            <div class="spacer"></div>
+            <div class="avatar" id="avatarDisplay">JD</div>
+        </header>
+
+        <!-- Main content -->
+        <main class="main-content" id="mainContent">
+            <h1>Dashboard</h1>
+            <div class="subtitle" id="welcomeMessage">Loading...</div>
+            <div class="last-updated" id="lastUpdated">Last updated: --</div>
+
+            <div id="errorContainer"></div>
+
+            <div class="card-grid" id="cardGrid">
+                <div class="card">
+                    <i class="fas fa-folder-open"></i>
+                    <h3>Total Projects</h3>
+                    <div class="card-value" id="totalProjects">-</div>
+                    <p>All projects</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-spinner"></i>
+                    <h3>In Progress</h3>
+                    <div class="card-value" id="inProgressProjects">-</div>
+                    <p>Active development</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>Completed</h3>
+                    <div class="card-value" id="completedProjects">-</div>
+                    <p>Finished projects</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-users"></i>
+                    <h3>Team Members</h3>
+                    <div class="card-value" id="totalUsers">-</div>
+                    <p>Active members</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Overlay -->
+        <div class="drawer-overlay" id="drawerOverlay"></div>
+
+        <!-- Navigation Drawer -->
+        <nav class="nav-drawer" id="navDrawer" role="navigation" aria-label="Main navigation">
+            <!-- drawer header -->
+            <div class="drawer-header">
+                <div class="user-profile">
+                    <div class="user-avatar" id="drawerAvatar">JD</div>
+                    <div class="user-info">
+                        <h4 id="drawerUserName">Jane Doe</h4>
+                        <p id="drawerUserEmail">jane@nexus.com</p>
+                    </div>
+                </div>
+                <button class="close-btn" id="closeDrawer" aria-label="Close drawer">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- navigation links -->
+            <div class="drawer-nav">
+                <div class="nav-label">Main</div>
+                <ul>
+                    <li><a href="#" class="active" data-page="dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="#" data-page="insights"><i class="fas fa-chart-line"></i> Insights</a></li>
+                    <li><a href="#" data-page="schedule"><i class="fas fa-calendar-alt"></i> Schedule</a></li>
+                    <li><a href="#" data-page="messages"><i class="fas fa-envelope"></i> Messages <span
+                                class="badge">3</span></a></li>
+                </ul>
+
+                <div class="nav-label">Workspace</div>
+                <ul>
+                    <li><a href="#" data-page="projects"><i class="fas fa-folder"></i> Projects</a></li>
+                    <li><a href="#" data-page="tasks"><i class="fas fa-tasks"></i> Tasks</a></li>
+                    <li><a href="#" data-page="team"><i class="fas fa-users-cog"></i> Team</a></li>
+                </ul>
+            </div>
+
+            <!-- footer -->
+            <div class="drawer-footer">
+                <a href="#" data-page="settings"><i class="fas fa-cog"></i> Settings</a>
+                <a href="#" data-page="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </nav>
+    </div>
+
+    <script>
+        (function () {
+            "use strict";
+
+            // Configuration
+            const API_BASE_URL = 'http://localhost:8080/api';
+            const USER_ID = 1; // Jane Doe
+
+            // DOM elements
+            const menuToggle = document.getElementById('menuToggle');
+            const closeDrawerBtn = document.getElementById('closeDrawer');
+            const drawerOverlay = document.getElementById('drawerOverlay');
+            const navDrawer = document.getElementById('navDrawer');
+            const mainContent = document.getElementById('mainContent');
+            const avatarDisplay = document.getElementById('avatarDisplay');
+            const drawerAvatar = document.getElementById('drawerAvatar');
+            const drawerUserName = document.getElementById('drawerUserName');
+            const drawerUserEmail = document.getElementById('drawerUserEmail');
+            const welcomeMessage = document.getElementById('welcomeMessage');
+            const lastUpdated = document.getElementById('lastUpdated');
+            const errorContainer = document.getElementById('errorContainer');
+            const totalProjects = document.getElementById('totalProjects');
+            const inProgressProjects = document.getElementById('inProgressProjects');
+            const completedProjects = document.getElementById('completedProjects');
+            const totalUsers = document.getElementById('totalUsers');
+
+            // Drawer functions
+            function openDrawer() {
+                navDrawer.classList.add('open');
+                drawerOverlay.classList.add('open');
+                mainContent.classList.add('shifted');
+                menuToggle.setAttribute('aria-expanded', 'true');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeDrawer() {
+                navDrawer.classList.remove('open');
+                drawerOverlay.classList.remove('open');
+                mainContent.classList.remove('shifted');
+                menuToggle.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = '';
+            }
+
+            function toggleDrawer() {
+                if (navDrawer.classList.contains('open')) {
+                    closeDrawer();
+                } else {
+                    openDrawer();
+                }
+            }
+
+            // Event listeners for drawer
+            menuToggle.addEventListener('click', toggleDrawer);
+            closeDrawerBtn.addEventListener('click', closeDrawer);
+            drawerOverlay.addEventListener('click', closeDrawer);
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && navDrawer.classList.contains('open')) {
+                    closeDrawer();
+                }
+            });
+
+            // Nav links click handler
+            document.querySelectorAll('.drawer-nav a, .drawer-footer a').forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    // Close drawer
+                    if (navDrawer.classList.contains('open')) {
+                        closeDrawer();
+                    }
+                    // Update active state
+                    document.querySelectorAll('.drawer-nav a').forEach(a => a.classList.remove('active'));
+                    if (this.closest('.drawer-nav')) {
+                        this.classList.add('active');
+                    }
+                    // Handle page navigation
+                    const page = this.dataset.page;
+                    if (page === 'dashboard') {
+                        loadDashboardData();
+                    } else {
+                        // Show placeholder for other pages
+                        const subtitle = document.getElementById('welcomeMessage');
+                        subtitle.textContent = `Viewing: ${page.charAt(0).toUpperCase() + page.slice(1)}`;
+                        // Reset card values to show placeholder
+                        totalProjects.textContent = '-';
+                        inProgressProjects.textContent = '-';
+                        completedProjects.textContent = '-';
+                        totalUsers.textContent = '-';
+                    }
+                });
+            });
+
+            // API functions
+            async function fetchDashboardStats() {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/dashboard/stats/${USER_ID}`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error fetching dashboard stats:', error);
+                    throw error;
+                }
+            }
+
+            async function fetchUserProfile() {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/users/${USER_ID}`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error fetching user profile:', error);
+                    throw error;
+                }
+            }
+
+            // UI update functions
+            function updateDashboardUI(data) {
+                totalProjects.textContent = data.totalProjects || 0;
+                inProgressProjects.textContent = data.inProgressProjects || 0;
+                completedProjects.textContent = data.completedProjects || 0;
+                totalUsers.textContent = data.totalUsers || 0;
+
+                // Update welcome message
+                const name = data.userName || 'User';
+                welcomeMessage.textContent = `Welcome back, ${name}. Here's what's happening with your projects.`;
+
+                // Update avatar and drawer info
+                const initials = data.userInitials || 'JD';
+                avatarDisplay.textContent = initials;
+                drawerAvatar.textContent = initials;
+                drawerUserName.textContent = data.userName || 'Jane Doe';
+                drawerUserEmail.textContent = data.userEmail || 'jane@nexus.com';
+
+                // Update last updated timestamp
+                const now = new Date();
+                lastUpdated.textContent = `Last updated: ${now.toLocaleString()}`;
+            }
+
+            function showError(message) {
+                errorContainer.innerHTML = `
+        <div class="error-message">
+          <i class="fas fa-exclamation-circle"></i>
+          <span>${message}</span>
+        </div>
+      `;
+            }
+
+            function clearError() {
+                errorContainer.innerHTML = '';
+            }
+
+            async function loadDashboardData() {
+                try {
+                    clearError();
+                    // Show loading state
+                    totalProjects.textContent = '...';
+                    inProgressProjects.textContent = '...';
+                    completedProjects.textContent = '...';
+                    totalUsers.textContent = '...';
+                    welcomeMessage.textContent = 'Loading...';
+
+                    // Fetch data in parallel
+                    const [stats, user] = await Promise.all([
+                        fetchDashboardStats(),
+                        fetchUserProfile()
+                    ]);
+
+                    // Combine data
+                    const dashboardData = {
+                        ...stats,
+                        userName: user.name,
+                        userEmail: user.email,
+                        userInitials: user.initials
+                    };
+
+                    updateDashboardUI(dashboardData);
+                } catch (error) {
+                    console.error('Failed to load dashboard:', error);
+                    showError('Failed to load dashboard data. Please refresh the page or try again later.');
+                    // Set fallback values
+                    totalProjects.textContent = '--';
+                    inProgressProjects.textContent = '--';
+                    completedProjects.textContent = '--';
+                    totalUsers.textContent = '--';
+                    welcomeMessage.textContent = 'Welcome back! Unable to load data.';
+                }
+            }
+
+            // Auto-refresh every 30 seconds
+            let refreshInterval;
+
+            function startAutoRefresh() {
+                if (refreshInterval) {
+                    clearInterval(refreshInterval);
+                }
+                refreshInterval = setInterval(() => {
+                    if (!document.hidden) {
+                        loadDashboardData();
+                    }
+                }, 30000);
+            }
+
+            function stopAutoRefresh() {
+                if (refreshInterval) {
+                    clearInterval(refreshInterval);
+                    refreshInterval = null;
+                }
+            }
+
+            // Handle page visibility changes
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    stopAutoRefresh();
+                } else {
+                    loadDashboardData();
+                    startAutoRefresh();
+                }
+            });
+
+            // Initial load
+            loadDashboardData();
+            startAutoRefresh();
+
+            // Clean up on page unload
+            window.addEventListener('beforeunload', () => {
+                stopAutoRefresh();
+            });
+
+            // Set initial aria-expanded
+            menuToggle.setAttribute('aria-expanded', 'false');
+
+            console.log('🚀 Nexus Dashboard loaded successfully!');
+            console.log(`📡 API endpoint: ${API_BASE_URL}`);
+            console.log(`👤 User ID: ${USER_ID}`);
+
+        })();
+    </script>
+</body>
+
+</html>
